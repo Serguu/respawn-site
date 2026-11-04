@@ -1,4 +1,4 @@
-import "server-only";
+﻿import "server-only";
 import { sql } from "./db";
 import type { Article, ArticleSummary, Category } from "./types";
 
@@ -10,7 +10,9 @@ function normalise<T extends { review_score: unknown }>(row: T): T {
   };
 }
 
-const summaryColumns = sql`
+// A function (not a constant) so nothing touches the database at import time -
+// otherwise `next build` fails on machines without DATABASE_URL.
+const summaryColumns = () => sql`
   a.id, a.slug, a.title, a.excerpt, a.cover_image, a.category, a.published_at,
   a.view_count, a.review_score, e.display_name as author_name
 `;
@@ -22,7 +24,7 @@ export async function getPublishedArticles(opts: {
   excludeId?: string;
 }): Promise<ArticleSummary[]> {
   const rows = await sql<ArticleSummary[]>`
-    select ${summaryColumns}
+    select ${summaryColumns()}
     from articles a
     left join editors e on e.id = a.author_id
     where a.status = 'published'
@@ -44,7 +46,7 @@ export async function countPublished(category?: Category): Promise<number> {
 
 export async function getMostRead(limit: number, category?: Category): Promise<ArticleSummary[]> {
   const rows = await sql<ArticleSummary[]>`
-    select ${summaryColumns}
+    select ${summaryColumns()}
     from articles a
     left join editors e on e.id = a.author_id
     where a.status = 'published' ${category ? sql`and a.category = ${category}` : sql``}
