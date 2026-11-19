@@ -5,9 +5,15 @@ import { SITE } from "@/lib/site";
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const articles = await sql<{ slug: string; updated_at: Date }[]>`
-    select slug, updated_at from articles where status = 'published' order by published_at desc
-  `;
+  // If the database is briefly unreachable, still serve the main pages instead of an error.
+  let articles: { slug: string; updated_at: Date }[] = [];
+  try {
+    articles = await sql<{ slug: string; updated_at: Date }[]>`
+      select slug, updated_at from articles where status = 'published' order by published_at desc
+    `;
+  } catch (error) {
+    console.error("sitemap: could not load articles", error);
+  }
   return [
     { url: `${SITE.url}/`, changeFrequency: "hourly" },
     { url: `${SITE.url}/news`, changeFrequency: "hourly" },

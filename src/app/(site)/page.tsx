@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getMostRead, getPublishedArticles } from "@/lib/articles";
 import type { ArticleSummary, Category } from "@/lib/types";
@@ -9,6 +10,9 @@ import { Cover } from "@/components/Cover";
 import { EmptyState } from "@/components/EmptyState";
 import { SectionHeading } from "@/components/SectionHeading";
 import { HomeTracker } from "@/components/trackers";
+
+// ?category=… is a filtered view of the homepage, so it points search engines at "/".
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default async function HomePage({ searchParams }: PageProps<"/">) {
   const param = (await searchParams).category;

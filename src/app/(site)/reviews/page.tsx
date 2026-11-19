@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import { CategoryListing, parsePage } from "@/components/CategoryListing";
 
-export const metadata: Metadata = { title: "Reviews", description: "Honest game reviews with scores, pros and cons." };
+export async function generateMetadata({ searchParams }: PageProps<"/reviews">): Promise<Metadata> {
+  const page = parsePage((await searchParams).page);
+  return {
+    title: page > 1 ? `Reviews – page ${page}` : "Reviews",
+    description: "Honest game reviews with scores, pros and cons.",
+    alternates: { canonical: page > 1 ? `/reviews?page=${page}` : "/reviews" },
+  };
+}
 
 export default async function ReviewsPage({ searchParams }: PageProps<"/reviews">) {
   const page = parsePage((await searchParams).page);

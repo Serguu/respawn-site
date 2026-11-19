@@ -10,6 +10,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: { default: `${SITE.name} – ${SITE.tagline}`, template: `%s · ${SITE.name}` },
   description: SITE.tagline,
+  applicationName: SITE.name,
+  openGraph: { siteName: SITE.name, type: "website", locale: "en_US" },
+  twitter: { card: "summary_large_image" },
+  // Canonical URLs are set per page (a canonical here would be inherited by every page).
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

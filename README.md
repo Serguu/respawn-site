@@ -37,10 +37,17 @@ live in `src/lib/site.ts`.
 ## Stats
 
 - **Google Analytics**: loaded through Google Tag Manager (container ID in `src/lib/site.ts`), on the public site only (not `/editor`) and only in production builds. GA4 itself is configured in the GTM container.
+- **Cookie consent (GDPR)**: `src/components/CookieConsent.tsx`. GTM is loaded only after the visitor clicks *Accept* (Consent Mode v2 signals are sent with it); *Reject* loads nothing. The choice is kept in `localStorage` and can be changed from *Cookie settings* in the footer.
 
 - **Views**: counted once per anonymous visitor per day (hash of IP + browser + date, raw IP never stored).
 - **Homepage CTR**: clicks on a homepage card ÷ times that card was ≥50% visible on the homepage.
 
 ## Deploy (Vercel)
 
-Import the project, add the same env vars plus `NEXT_PUBLIC_SITE_URL=https://your-domain`, deploy.
+Import the project, add the same env vars, deploy. `NEXT_PUBLIC_SITE_URL=https://your-domain` is only needed once you use a custom domain; without it the sitemap, robots.txt and canonical links use the Vercel production domain.
+
+## SEO
+
+- `robots.txt` and `sitemap.xml` (all published articles) are generated automatically; the editor is `noindex`.
+- Every public page has a canonical URL; articles also have Open Graph data and schema.org JSON-LD (`NewsArticle`, or `Review` with the score for reviews).
+- Google only finds a new site once it is told about it: verify the domain in Google Search Console and submit `/sitemap.xml`.
