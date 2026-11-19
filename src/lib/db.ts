@@ -14,13 +14,19 @@ function getClient(): Sql {
   const cached = globalThis.__sqlPool;
   if (cached?.url === url) return cached.client;
   cached?.client.end({ timeout: 5 }).catch(() => {});
-  // prepare:false is required by Supabase's transaction pooler. On serverless, idle connections are
-  // closed after 20 s and every connection is replaced after 5 min, so a connection the pooler left
-  // in a bad state doesn't linger; connect_timeout stops a request waiting forever for a socket.
+  // Settings for Supabase's transaction pooler (Supavisor) on serverless:
+  // - prepare: false — the pooler can't keep prepared statements between transactions.
+  // - max_pipeline: 1 — postgres.js otherwise sends several queries on one busy connection without
+  //   waiting for answers (pipelining). Through Supavisor that left queries stuck forever (server
+  //   waiting on "Client"), which hung every page that ran more than `max` queries at once.
+  // - queue_timeout — a query waiting for a free connection fails after 15 s instead of hanging.
+  // - idle_timeout / max_lifetime / connect_timeout — don't keep connections around for long.
   const client = postgres(url, {
     prepare: false,
     ssl: "require",
     max: 5,
+    max_pipeline: 1,
+    queue_timeout: 15,
     idle_timeout: 20,
     max_lifetime: 60 * 5,
     connect_timeout: 10,
