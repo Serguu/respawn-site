@@ -1,6 +1,7 @@
 import { CookieConsent } from "@/components/CookieConsent";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { BackToTop } from "@/components/ScrollHelpers";
 
 // Content comes from the database, so render on every request.
 export const dynamic = "force-dynamic";
@@ -19,6 +20,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         {children}
       </main>
       <Footer />
+      <BackToTop />
       {/* Loads Google Tag Manager (GA4 is configured inside it) only after the visitor accepts cookies.
           Public site only, not the editor, and only in production builds. */}
       <CookieConsent />

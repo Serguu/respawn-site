@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
   },
   twitter: { card: "summary_large_image" },
+  alternates: { types: { "application/rss+xml": [{ url: "/rss.xml", title: SITE.name }] } },
   // Canonical URLs are set per page (a canonical here would be inherited by every page).
 };
 

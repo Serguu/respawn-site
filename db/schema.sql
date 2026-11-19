@@ -19,7 +19,7 @@ create table if not exists articles (
   content_json          jsonb,
   content_html          text not null default '',
   cover_image           text,
-  category              text not null check (category in ('news', 'review')),
+  category              text not null check (category in ('news', 'review', 'article')),
   status                text not null default 'draft' check (status in ('draft', 'published')),
   author_id             uuid references editors(id) on delete set null,
   published_at          timestamptz,
@@ -57,12 +57,9 @@ create table if not exists team_members (
   created_at timestamptz not null default now()
 );
 
--- Site-wide settings edited from the editor (e.g. the footer disclaimer), one JSON value per key.
-create table if not exists site_settings (
-  key        text primary key,
-  value      jsonb not null,
-  updated_at timestamptz not null default now()
-);
+-- Newer tables (site_settings, recommendations, recommendation_votes, trivia_questions) and the
+-- third article category are created by src/lib/migrations.ts, which db:setup also runs and the
+-- app runs by itself on first use, so an existing database upgrades without manual steps.
 
 -- The app talks to Postgres directly (server-side only). Enabling RLS with no
 -- policies blocks Supabase's public REST API from reading or writing these tables.
@@ -70,4 +67,3 @@ alter table editors      enable row level security;
 alter table articles     enable row level security;
 alter table view_events  enable row level security;
 alter table team_members enable row level security;
-alter table site_settings enable row level security;

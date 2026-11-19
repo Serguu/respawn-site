@@ -26,6 +26,7 @@ export function ArticleCard({ article, priority = false }: { article: ArticleSum
           <time className="text-muted" dateTime={article.published_at?.toISOString()}>
             {timeAgo(article.published_at)}
           </time>
+          {article.reading_minutes ? <span className="text-muted">· {article.reading_minutes} min</span> : null}
         </p>
         <h3 className="mt-2 font-display text-lg font-extrabold leading-snug text-ink">
           <CategoryBadge category={article.category} className="mr-2" />

@@ -18,3 +18,10 @@ export function visitorHash(headers: Headers) {
     .update(`${clientIp(headers)}|${headers.get("user-agent") ?? ""}|${day}|${process.env.SESSION_SECRET}`)
     .digest("hex");
 }
+
+/** Anonymous id that doesn't rotate daily, for one-vote-per-visitor features. The raw IP is never stored. */
+export function stableVisitorHash(headers: Headers) {
+  return createHash("sha256")
+    .update(`vote|${clientIp(headers)}|${headers.get("user-agent") ?? ""}|${process.env.SESSION_SECRET}`)
+    .digest("hex");
+}

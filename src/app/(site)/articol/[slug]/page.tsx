@@ -6,7 +6,9 @@ import { ArticleCard } from "@/components/ArticleCard";
 import { ArticleView } from "@/components/ArticleView";
 import { SectionHeading } from "@/components/SectionHeading";
 import { JsonLd } from "@/components/JsonLd";
+import { ReadingProgress } from "@/components/ScrollHelpers";
 import { ViewTracker } from "@/components/trackers";
+import { CATEGORIES } from "@/lib/categories";
 import { SITE } from "@/lib/site";
 import type { Article } from "@/lib/types";
 
@@ -28,7 +30,7 @@ export async function generateMetadata({ params }: PageProps<"/articol/[slug]">)
       publishedTime: article.published_at?.toISOString(),
       modifiedTime: article.updated_at.toISOString(),
       authors: article.author_name ? [article.author_name] : undefined,
-      section: article.category === "review" ? "Recenzii" : "Știri",
+      section: CATEGORIES[article.category].label,
       images: article.cover_image ? [article.cover_image] : undefined,
     },
   };
@@ -38,9 +40,7 @@ export async function generateMetadata({ params }: PageProps<"/articol/[slug]">)
 function structuredData(article: Article) {
   const url = `${SITE.url}/articol/${article.slug}`;
   const isReview = article.category === "review";
-  const section = isReview
-    ? { name: "Recenzii", url: `${SITE.url}/recenzii` }
-    : { name: "Știri", url: `${SITE.url}/stiri` };
+  const section = { name: CATEGORIES[article.category].label, url: `${SITE.url}${CATEGORIES[article.category].path}` };
   const author = article.author_name ? { "@type": "Person", name: article.author_name } : undefined;
   const publisher = {
     "@type": "Organization",
@@ -71,7 +71,8 @@ function structuredData(article: Article) {
         }
       : {
           ...base,
-          "@type": "NewsArticle",
+          // Opinion/analysis pieces aren't news, so they're plain Articles.
+          "@type": article.category === "news" ? "NewsArticle" : "Article",
           headline: article.title,
           description: article.excerpt,
           articleSection: section.name,
@@ -91,20 +92,20 @@ export default async function ArticlePage({ params }: PageProps<"/articol/[slug]
   const article = await getArticle((await params).slug);
   if (!article) notFound();
 
-  const isReview = article.category === "review";
   const related = await getPublishedArticles({ category: article.category, limit: 3, excludeId: article.id });
 
   return (
     <article className="pb-8">
       <JsonLd data={structuredData(article)} />
+      <ReadingProgress />
       <ViewTracker articleId={article.id} />
       <ArticleView article={article} shareUrl={`${SITE.url}/articol/${article.slug}`} />
 
       {related.length > 0 && (
         <aside className="mx-auto mt-20 max-w-7xl px-4 sm:px-6">
           <SectionHeading
-            title={isReview ? "Mai multe recenzii" : "Mai multe știri"}
-            href={isReview ? "/recenzii" : "/stiri"}
+            title={`Mai multe ${CATEGORIES[article.category].label.toLowerCase()}`}
+            href={CATEGORIES[article.category].path}
             accent={article.category}
           />
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

@@ -1,7 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { isCategory } from "@/lib/categories";
 import { sql } from "@/lib/db";
+import { ensureSchema } from "@/lib/migrations";
 import { slugify } from "@/lib/format";
 import { sanitizeArticleHtml } from "@/lib/sanitize";
 import { requireEditor } from "@/lib/session";
@@ -40,13 +42,16 @@ async function uniqueSlug(base: string, id: string | null): Promise<string> {
 
 export async function saveArticle(_prev: SaveState, formData: FormData): Promise<SaveState> {
   const editor = await requireEditor();
+  // Makes sure the database accepts the newer "article" category before saving.
+  await ensureSchema();
 
   const rawId = String(formData.get("id") ?? "");
   const id = UUID.test(rawId) ? rawId : null;
   const intent = String(formData.get("intent") ?? "save");
   const title = String(formData.get("title") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim().slice(0, 400);
-  const category = formData.get("category") === "review" ? "review" : "news";
+  const rawCategory = formData.get("category");
+  const category = isCategory(rawCategory) ? rawCategory : "news";
   const coverRaw = String(formData.get("cover_image") ?? "").trim();
   const coverImage = coverRaw && isHttpUrl(coverRaw) ? coverRaw : null;
   const contentHtml = sanitizeArticleHtml(String(formData.get("content_html") ?? ""));

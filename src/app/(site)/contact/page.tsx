@@ -6,7 +6,7 @@ import type { TeamMember } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Contact – echipa",
-  description: "Cunoaște oamenii din spatele articolelor RESPAWN și găsește-i pe rețelele sociale.",
+  description: "Cunoaște oamenii din spatele articolelor RespawnCentral și găsește-i pe rețelele sociale.",
   alternates: { canonical: "/contact" },
 };
 

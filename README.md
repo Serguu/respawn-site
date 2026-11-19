@@ -1,4 +1,4 @@
-# RESPAWN – gaming news & reviews
+# RespawnCentral – gaming news, reviews & community
 
 Next.js 16 + Tailwind 4 + Supabase (Postgres + Storage). Design tokens live in
 `src/app/globals.css` (palette from `design/context.txt`). Site name/tagline/disclaimer
@@ -45,6 +45,24 @@ live in `src/lib/site.ts`.
 ## Deploy (Vercel)
 
 Import the project, add the same env vars, deploy. `NEXT_PUBLIC_SITE_URL=https://your-domain` is only needed once you use a custom domain; without it the sitemap, robots.txt and canonical links use the Vercel production domain.
+
+## Sections
+
+| URL | What |
+| --- | --- |
+| `/stiri`, `/recenzii`, `/articole` | The three article categories (`news`, `review`, `article` = opinions/analysis/guides). Defined in `src/lib/categories.ts`. |
+| `/recomandari` | Games recommended by visitors. Submissions wait in Editor → Recommendations until approved; visitors can upvote (one vote each, anonymous hash, no cookie). Honeypot + rate limit against spam. |
+| `/joaca` | Mini-games (Snake with the "R" head, aim trainer, trivia), one picked at random per visit; `?joc=snake|aim|trivia` links to one. Best scores stay in the visitor's browser. Trivia questions are managed in Editor → Trivia (built-in set until there are 5 of your own). |
+| `/cauta` | Search over published articles, diacritics-insensitive (`noindex`). |
+| `/rss.xml` | RSS feed of the latest 30 articles. |
+
+## Database changes
+
+New tables and the third category are applied by `src/lib/migrations.ts`, automatically the first time they're needed (and by `npm run db:setup`). Nothing to run by hand after deploying.
+
+## Editor
+
+Articles: text styles (H2–H4), highlight, small text, alignment, quotes with 4 styles (classic, big pull quote, box, speech bubble) and an author line, and a "Sources" box for references in small print. Settings: footer disclaimer and the site's social accounts.
 
 ## SEO
 

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getDashboardTotals, listArticles } from "@/lib/editor-data";
 import { formatNumber } from "@/lib/format";
 import { ctr } from "@/lib/stats";
+import { CATEGORIES } from "@/lib/categories";
 
 export default async function DashboardPage() {
   const [totals, articles] = await Promise.all([getDashboardTotals(), listArticles()]);
@@ -69,8 +70,8 @@ export default async function DashboardPage() {
                 {byViews.map((a) => (
                   <tr key={a.id}>
                     <td className="max-w-xs truncate px-5 py-2.5">
-                      <span className={`mr-2 text-xs font-bold ${a.category === "review" ? "text-review" : "text-news"}`}>
-                        {a.category === "review" ? "REV" : "NEWS"}
+                      <span className={`mr-2 text-xs font-bold ${CATEGORIES[a.category].text}`}>
+                        {{ news: "NEWS", review: "REV", article: "ART" }[a.category]}
                       </span>
                       <Link href={`/editor/articles/${a.id}`} className="text-ink hover:text-accent">
                         {a.title}

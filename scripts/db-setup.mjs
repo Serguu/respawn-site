@@ -16,6 +16,11 @@ if (!DATABASE_URL) {
 const sql = postgres(DATABASE_URL, { prepare: false, ssl: "require" });
 const schema = await readFile(new URL("../db/schema.sql", import.meta.url), "utf8");
 await sql.unsafe(schema);
+// Newer tables/changes live in src/lib/migrations.ts (the app also applies them on its own).
+const migrationsSource = await readFile(new URL("../src/lib/migrations.ts", import.meta.url), "utf8");
+const migrations = migrationsSource.match(/const MIGRATIONS = `([\s\S]*?)`;/)?.[1];
+if (!migrations) throw new Error("Could not find MIGRATIONS in src/lib/migrations.ts");
+await sql.unsafe(migrations);
 await sql.end();
 console.log("✔ Database schema is up to date");
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { countPendingRecommendations } from "@/lib/recommendations";
 import { requireEditor } from "@/lib/session";
 import { SITE } from "@/lib/site";
 import { logout } from "../actions";
@@ -6,6 +7,7 @@ import { EditorNav } from "./EditorNav";
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const editor = await requireEditor();
+  const pending = await countPendingRecommendations();
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
@@ -17,7 +19,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
             </span>
             <span className="font-display text-lg font-black text-ink">Studio</span>
           </div>
-          <EditorNav />
+          <EditorNav pendingRecommendations={pending} />
           <div className="mt-4 space-y-2 border-t border-line pt-4 md:mt-auto">
             <p className="px-2 text-xs text-muted">
               Signed in as <span className="font-semibold text-ink">{editor.display_name}</span>
