@@ -1,8 +1,13 @@
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 
 // Content comes from the database, so render on every request.
 export const dynamic = "force-dynamic";
+
+// Google Analytics 4 measurement ID (G-XXXXXXXXXX). Loaded only on the public site, not in the
+// editor, and only when the env var is set, so local dev without it sends nothing.
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,6 +23,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         {children}
       </main>
       <Footer />
+      {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
     </>
   );
 }

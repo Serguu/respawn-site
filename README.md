@@ -10,6 +10,7 @@ live in `src/lib/site.ts`.
    - `DATABASE_URL` – Supabase → Project Settings → Database → Connection string → **Transaction pooler** (port 6543), with your DB password.
    - `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` – Supabase → Project Settings → API.
    - `SESSION_SECRET` – already generated, keep it secret.
+   - `NEXT_PUBLIC_GA_ID` (optional) – Google Analytics 4 Measurement ID (`G-…`), from GA → Admin → Data streams. Only loaded on the public site, not in `/editor`.
 2. Create tables + the public `media` image bucket:
    ```bash
    npm run db:setup
@@ -41,4 +42,4 @@ live in `src/lib/site.ts`.
 
 ## Deploy (Vercel)
 
-Import the project, add the same env vars plus `NEXT_PUBLIC_SITE_URL=https://your-domain`, deploy.
+Import the project, add the same env vars plus `NEXT_PUBLIC_SITE_URL=https://your-domain` and `NEXT_PUBLIC_GA_ID=G-…`, deploy.
