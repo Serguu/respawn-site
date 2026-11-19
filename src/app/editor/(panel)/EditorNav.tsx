@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/editor/articles", label: "Articles" },
   { href: "/editor/articles/new", label: "New article" },
   { href: "/editor/team", label: "Team" },
+  { href: "/editor/settings", label: "Settings" },
 ];
 
 export function EditorNav() {

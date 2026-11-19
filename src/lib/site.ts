@@ -30,6 +30,3 @@ export const NAV_LINKS = [
   { href: "/recenzii", label: "Recenzii" },
   { href: "/contact", label: "Contact" },
 ] as const;
-
-export const DISCLAIMER =
-  "Toate articolele și recenziile de pe acest site sunt scrise din pasiune de participanții la acest proiect și reprezintă opinii personale. Autorii nu sunt jurnaliști sau experți din industrie, iar acest site este un proiect al comunității, nu o publicație oficială de știri din gaming.";
