@@ -98,7 +98,7 @@ export default async function ArticlePage({ params }: PageProps<"/articol/[slug]
     <article className="pb-8">
       <JsonLd data={structuredData(article)} />
       <ViewTracker articleId={article.id} />
-      <ArticleView article={article} />
+      <ArticleView article={article} shareUrl={`${SITE.url}/articol/${article.slug}`} />
 
       {related.length > 0 && (
         <aside className="mx-auto mt-20 max-w-7xl px-4 sm:px-6">

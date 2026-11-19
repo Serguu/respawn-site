@@ -57,9 +57,17 @@ create table if not exists team_members (
   created_at timestamptz not null default now()
 );
 
+-- Site-wide settings edited from the editor (e.g. the footer disclaimer), one JSON value per key.
+create table if not exists site_settings (
+  key        text primary key,
+  value      jsonb not null,
+  updated_at timestamptz not null default now()
+);
+
 -- The app talks to Postgres directly (server-side only). Enabling RLS with no
 -- policies blocks Supabase's public REST API from reading or writing these tables.
 alter table editors      enable row level security;
 alter table articles     enable row level security;
 alter table view_events  enable row level security;
 alter table team_members enable row level security;
+alter table site_settings enable row level security;

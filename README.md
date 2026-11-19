@@ -51,5 +51,7 @@ Import the project, add the same env vars, deploy. `NEXT_PUBLIC_SITE_URL=https:/
 - `robots.txt` and `sitemap.xml` (all published articles) are generated automatically; the editor is `noindex`.
 - The public site is in Romanian (`<html lang="ro">`, `og:locale ro_RO`, `latin-ext` fonts for ș/ț).
 - Every public page has a canonical URL. The homepage has `WebSite` + `Organization` JSON-LD; articles have Open Graph data and JSON-LD (`NewsArticle`, or `Review` with the score) plus a breadcrumb trail.
-- Favicon, Apple icon and the default social preview image are generated in `src/app/icon.tsx`, `apple-icon.tsx`, `opengraph-image.tsx`; articles with a cover use it as their preview.
+- Articles have share buttons (Facebook, WhatsApp, X, Reddit, Telegram, copy link, and the phone's own share sheet where available). Shared links carry `utm_source=<network>` so GA shows which network brought the visit; each share is pushed to the dataLayer as a `share` event.
+- The footer disclaimer is edited (or hidden) from Editor → Settings; it's stored in the `site_settings` table, which is created on first save if `db:setup` wasn't re-run.
+- `src/app/favicon.ico` (16/32/48px) plus a 96px icon, Apple icon and the default social preview image generated in `src/app/icon.tsx`, `apple-icon.tsx`, `opengraph-image.tsx`; articles with a cover use it as their preview.
 - Google only finds a new site once it is told about it: verify the domain in Google Search Console and submit `/sitemap.xml`.

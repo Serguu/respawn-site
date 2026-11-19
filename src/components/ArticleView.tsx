@@ -4,9 +4,14 @@ import type { Article } from "@/lib/types";
 import { formatDate, formatNumber, readingTime } from "@/lib/format";
 import { CategoryBadge, ScoreRing } from "./Badges";
 import { ReviewSummary } from "./ReviewSummary";
+import { ShareButtons } from "./ShareButtons";
 
-/** The clean reading layout shared by the public article page and the editor preview. */
-export function ArticleView({ article }: { article: Article }) {
+/**
+ * The clean reading layout shared by the public article page and the editor preview.
+ * `shareUrl` (public page only) adds the share buttons under the title and after the article.
+ */
+export function ArticleView({ article, shareUrl }: { article: Article; shareUrl?: string }) {
+  const share = shareUrl ? <ShareButtons url={shareUrl} title={article.title} slug={article.slug} /> : null;
   const isReview = article.category === "review";
   const hasScore = isReview && article.review_score !== null;
 
@@ -57,6 +62,7 @@ export function ArticleView({ article }: { article: Article }) {
             </span>
           )}
         </div>
+        {share && <div className="mt-5">{share}</div>}
       </header>
 
       {article.cover_image && (
@@ -70,6 +76,12 @@ export function ArticleView({ article }: { article: Article }) {
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <div className="article-body mt-10" dangerouslySetInnerHTML={{ __html: article.content_html }} />
         {isReview && <ReviewSummary article={article} />}
+        {share && (
+          <div className="mt-14 rounded-xl border border-line bg-surface p-5 sm:p-6">
+            <p className="mb-4 font-display text-lg font-black text-ink">Ți-a plăcut? Trimite-l unui prieten.</p>
+            {share}
+          </div>
+        )}
       </div>
     </>
   );
