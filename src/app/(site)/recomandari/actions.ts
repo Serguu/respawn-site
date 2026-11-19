@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { sql } from "@/lib/db";
-import { ensureSchema } from "@/lib/migrations";
+import { isMissingTable } from "@/lib/migrations";
 import { PLATFORMS } from "@/lib/recommendations";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { isBot, stableVisitorHash } from "@/lib/visitor";
@@ -37,17 +37,22 @@ export async function submitRecommendation(_prev: SuggestState, formData: FormDa
     return { error: "Ai trimis deja câteva recomandări. Mai încearcă peste o oră." };
   }
 
-  await ensureSchema();
-  // Also limited in the database, since every server instance has its own in-memory counter.
-  const [recent] = await sql<{ count: string }[]>`
-    select count(*) from recommendations where visitor_hash = ${visitor} and created_at > now() - interval '1 hour'
-  `;
-  if (Number(recent.count) >= 3) return { error: "Ai trimis deja câteva recomandări. Mai încearcă peste o oră." };
+  try {
+    // Also limited in the database, since every server instance has its own in-memory counter.
+    const [recent] = await sql<{ count: string }[]>`
+      select count(*) from recommendations where visitor_hash = ${visitor} and created_at > now() - interval '1 hour'
+    `;
+    if (Number(recent.count) >= 3) return { error: "Ai trimis deja câteva recomandări. Mai încearcă peste o oră." };
 
-  await sql`
-    insert into recommendations (game, platform, reason, author_name, visitor_hash)
-    values (${game}, ${platform}, ${reason}, ${author}, ${visitor})
-  `;
+    await sql`
+      insert into recommendations (game, platform, reason, author_name, visitor_hash)
+      values (${game}, ${platform}, ${reason}, ${author}, ${visitor})
+    `;
+  } catch (error) {
+    // Tables are created when the editor is opened after a deploy; until then, say so instead of crashing.
+    if (isMissingTable(error)) return { error: "Recomandările nu sunt disponibile momentan. Încearcă puțin mai târziu." };
+    throw error;
+  }
   return { ok: true };
 }
 
@@ -58,24 +63,30 @@ export async function toggleVote(id: string): Promise<{ voted: boolean; votes: n
   if (isBot(h.get("user-agent"))) return null;
   const visitor = stableVisitorHash(h);
   if (!checkRateLimit(`vote:${visitor}`, 60, 10 * 60 * 1000).allowed) return null;
-  await ensureSchema();
 
-  const [rec] = await sql<{ id: string }[]>`select id from recommendations where id = ${id} and status = 'approved'`;
-  if (!rec) return null;
+  let result: { voted: boolean; votes: number };
+  try {
+    const [rec] = await sql<{ id: string }[]>`select id from recommendations where id = ${id} and status = 'approved'`;
+    if (!rec) return null;
 
-  const removed = await sql`delete from recommendation_votes where recommendation_id = ${id} and visitor_hash = ${visitor}`;
-  let voted = false;
-  if (removed.count === 0) {
-    await sql`insert into recommendation_votes (recommendation_id, visitor_hash) values (${id}, ${visitor}) on conflict do nothing`;
-    voted = true;
+    const removed = await sql`delete from recommendation_votes where recommendation_id = ${id} and visitor_hash = ${visitor}`;
+    let voted = false;
+    if (removed.count === 0) {
+      await sql`insert into recommendation_votes (recommendation_id, visitor_hash) values (${id}, ${visitor}) on conflict do nothing`;
+      voted = true;
+    }
+    // Recount instead of +1/-1 so the number can't drift.
+    const [row] = await sql<{ votes: number }[]>`
+      update recommendations
+      set votes = (select count(*) from recommendation_votes where recommendation_id = ${id})
+      where id = ${id}
+      returning votes
+    `;
+    result = { voted, votes: row.votes };
+  } catch (error) {
+    if (isMissingTable(error)) return null;
+    throw error;
   }
-  // Recount instead of +1/-1 so the number can't drift.
-  const [row] = await sql<{ votes: number }[]>`
-    update recommendations
-    set votes = (select count(*) from recommendation_votes where recommendation_id = ${id})
-    where id = ${id}
-    returning votes
-  `;
   revalidatePath("/recomandari");
-  return { voted, votes: row.votes };
+  return result;
 }

@@ -2,9 +2,13 @@ import "server-only";
 import { sql } from "./db";
 
 /**
- * Brings an existing database up to date with db/schema.sql. Every statement is idempotent.
- * It runs by itself (once per server instance) the first time a newer table or column is needed,
- * so deploying is enough; `npm run db:setup` does the same thing by hand.
+ * Brings an existing database up to date with db/schema.sql.
+ *
+ * Runs from `npm run db:setup` and from the editor (opening it, or saving), never while rendering
+ * public pages: schema changes need short table locks, and on a busy production database a waiting
+ * lock makes every reader queue behind it. So the whole thing is one transaction that gives up
+ * after 2 s of waiting for a lock (and 20 s overall) instead of taking the site down, and each step
+ * is skipped when it's already done, so a migrated database takes no locks at all.
  */
 const MIGRATIONS = `
   -- 2026-11: third article category ("article" = opinions, analysis, guides).
@@ -18,51 +22,75 @@ const MIGRATIONS = `
     end if;
   end $$;
 
-  create table if not exists site_settings (
-    key        text primary key,
-    value      jsonb not null,
-    updated_at timestamptz not null default now()
-  );
+  do $$ begin
+    if to_regclass('public.site_settings') is null then
+      create table site_settings (
+        key        text primary key,
+        value      jsonb not null,
+        updated_at timestamptz not null default now()
+      );
+    end if;
 
-  create table if not exists recommendations (
-    id           uuid primary key default gen_random_uuid(),
-    game         text not null,
-    platform     text not null default '',
-    reason       text not null,
-    author_name  text not null default '',
-    status       text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
-    votes        integer not null default 0,
-    visitor_hash text not null default '',
-    created_at   timestamptz not null default now(),
-    reviewed_at  timestamptz
-  );
-  create index if not exists recommendations_status_idx on recommendations (status, votes desc, created_at desc);
+    if to_regclass('public.recommendations') is null then
+      create table recommendations (
+        id           uuid primary key default gen_random_uuid(),
+        game         text not null,
+        platform     text not null default '',
+        reason       text not null,
+        author_name  text not null default '',
+        status       text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
+        votes        integer not null default 0,
+        visitor_hash text not null default '',
+        created_at   timestamptz not null default now(),
+        reviewed_at  timestamptz
+      );
+      create index recommendations_status_idx on recommendations (status, votes desc, created_at desc);
+    end if;
 
-  create table if not exists recommendation_votes (
-    recommendation_id uuid not null references recommendations(id) on delete cascade,
-    visitor_hash      text not null,
-    primary key (recommendation_id, visitor_hash)
-  );
+    if to_regclass('public.recommendation_votes') is null then
+      create table recommendation_votes (
+        recommendation_id uuid not null references recommendations(id) on delete cascade,
+        visitor_hash      text not null,
+        primary key (recommendation_id, visitor_hash)
+      );
+    end if;
 
-  create table if not exists trivia_questions (
-    id         uuid primary key default gen_random_uuid(),
-    question   text not null,
-    answers    jsonb not null,
-    correct    smallint not null check (correct between 0 and 3),
-    active     boolean not null default true,
-    created_at timestamptz not null default now()
-  );
+    if to_regclass('public.trivia_questions') is null then
+      create table trivia_questions (
+        id         uuid primary key default gen_random_uuid(),
+        question   text not null,
+        answers    jsonb not null,
+        correct    smallint not null check (correct between 0 and 3),
+        active     boolean not null default true,
+        created_at timestamptz not null default now()
+      );
+    end if;
+  end $$;
 
-  alter table site_settings        enable row level security;
-  alter table recommendations      enable row level security;
-  alter table recommendation_votes enable row level security;
-  alter table trivia_questions     enable row level security;
+  -- RLS with no policies keeps Supabase's public REST API out (only where it isn't on yet).
+  do $$
+  declare t text;
+  begin
+    foreach t in array array['site_settings', 'recommendations', 'recommendation_votes', 'trivia_questions'] loop
+      if not (select relrowsecurity from pg_class where oid = ('public.' || t)::regclass) then
+        execute format('alter table %I enable row level security', t);
+      end if;
+    end loop;
+  end $$;
 `;
 
 let pending: Promise<void> | null = null;
 
+/** Applies MIGRATIONS once per server instance. Editor/db:setup only — never call it from a public page. */
 export function ensureSchema(): Promise<void> {
-  pending ??= sql.unsafe(MIGRATIONS).then(
+  pending ??= sql
+    .begin(async (tx) => {
+      // Give up instead of queueing: a waiting ALTER would make every page read wait behind it.
+      await tx.unsafe("set local lock_timeout = '2s'");
+      await tx.unsafe("set local statement_timeout = '20s'");
+      await tx.unsafe(MIGRATIONS);
+    })
+    .then(
     () => undefined,
     (error) => {
       pending = null; // try again next time
@@ -72,15 +100,17 @@ export function ensureSchema(): Promise<void> {
   return pending;
 }
 
-/** Runs a query; if it failed because a newer table doesn't exist yet, migrates and retries once. */
-export async function withSchema<T>(query: () => Promise<T>): Promise<T> {
+/** True when the error means a newer table doesn't exist yet (the editor hasn't been opened since deploying). */
+export function isMissingTable(error: unknown) {
+  return (error as { code?: string })?.code === "42P01"; // undefined_table
+}
+
+/** Runs a read on a newer table; if that table doesn't exist yet, returns `fallback` instead of failing. */
+export async function ifTableExists<R, F>(query: () => Promise<R>, fallback: F): Promise<R | F> {
   try {
     return await query();
   } catch (error) {
-    if ((error as { code?: string }).code !== "42P01") throw error; // 42P01 = undefined_table
-    await ensureSchema();
-    return query();
+    if (isMissingTable(error)) return fallback;
+    throw error;
   }
 }
-
-
