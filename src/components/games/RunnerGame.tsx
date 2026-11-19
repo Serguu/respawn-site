@@ -270,7 +270,6 @@ export function RunnerGame() {
     if (k === " " || k === "arrowup" || k === "w") {
       e.preventDefault();
       if (phase === "playing") jump();
-      else start();
     } else if (k === "arrowdown" || k === "s") {
       e.preventDefault();
       if (phase === "playing") setDuck(true);

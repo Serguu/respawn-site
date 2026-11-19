@@ -207,7 +207,7 @@ export function SnakeGame() {
     const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     if (DIRS[key]) {
       e.preventDefault();
-      if (phase === "ready" || phase === "over") start();
+      if (phase === "ready") start();
       turn(DIRS[key]);
     } else if (key === " " || key === "p") {
       e.preventDefault();

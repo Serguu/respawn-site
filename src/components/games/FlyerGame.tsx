@@ -232,7 +232,7 @@ export function FlyerGame() {
     if (k === " " || k === "arrowup" || k === "w") {
       e.preventDefault();
       if (phase === "playing") flap();
-      else if (!e.repeat) start();
+      // else if (!e.repeat) start();
     }
   };
 
