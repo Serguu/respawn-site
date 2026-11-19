@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DISCLAIMER, NAV_LINKS, SITE } from "@/lib/site";
+import { CookieSettingsButton } from "./CookieConsent";
 import { Logo } from "./Logo";
 
 export function Footer() {
@@ -35,9 +36,10 @@ export function Footer() {
           <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">{DISCLAIMER}</p>
         </aside>
 
-        <p className="mt-8 text-xs text-muted">
-          © {new Date().getFullYear()} {SITE.name}. A community project made with passion.
-        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 text-xs text-muted">
+          <p>© {new Date().getFullYear()} {SITE.name}. A community project made with passion.</p>
+          <CookieSettingsButton />
+        </div>
       </div>
     </footer>
   );

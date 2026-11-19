@@ -14,7 +14,6 @@
     "prosemirror-transform": "1.12.4"
   },
   "dependencies": {
-    "@next/third-parties": "^16.4.5",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.0",
     "@tiptap/extension-image": "^3.32.2",
