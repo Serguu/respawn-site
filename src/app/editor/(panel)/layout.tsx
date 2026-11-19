@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ensureSchema } from "@/lib/migrations";
 import { countPendingRecommendations } from "@/lib/recommendations";
 import { requireEditor } from "@/lib/session";
 import { SITE } from "@/lib/site";
@@ -7,6 +8,9 @@ import { EditorNav } from "./EditorNav";
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const editor = await requireEditor();
+  // New tables/columns are created here, when an editor opens the panel, not by visitor traffic.
+  // It gives up quickly if the database is busy and is retried on the next page.
+  await ensureSchema().catch((error) => console.error("migrations: not applied yet", error));
   const pending = await countPendingRecommendations();
 
   return (

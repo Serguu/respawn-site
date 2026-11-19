@@ -1,6 +1,6 @@
 import "server-only";
 import { sql } from "./db";
-import { withSchema } from "./migrations";
+import { ifTableExists } from "./migrations";
 import type { TriviaQuestion } from "./types";
 
 type Q = Omit<TriviaQuestion, "id" | "active">;
@@ -30,10 +30,11 @@ export const DEFAULT_TRIVIA: Q[] = [
 ];
 
 export async function getAllTriviaQuestions(): Promise<TriviaQuestion[]> {
-  return withSchema(
+  return ifTableExists(
     () => sql<TriviaQuestion[]>`
       select id, question, answers, correct, active from trivia_questions order by created_at asc
     `,
+    [],
   );
 }
 

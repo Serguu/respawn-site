@@ -20,7 +20,10 @@ await sql.unsafe(schema);
 const migrationsSource = await readFile(new URL("../src/lib/migrations.ts", import.meta.url), "utf8");
 const migrations = migrationsSource.match(/const MIGRATIONS = `([\s\S]*?)`;/)?.[1];
 if (!migrations) throw new Error("Could not find MIGRATIONS in src/lib/migrations.ts");
-await sql.unsafe(migrations);
+await sql.begin(async (tx) => {
+  await tx.unsafe("set local lock_timeout = '10s'");
+  await tx.unsafe(migrations);
+});
 await sql.end();
 console.log("✔ Database schema is up to date");
 
