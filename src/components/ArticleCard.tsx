@@ -8,7 +8,7 @@ import { Cover } from "./Cover";
 export function ArticleCard({ article, priority = false }: { article: ArticleSummary; priority?: boolean }) {
   return (
     <article data-article-id={article.id} className="group">
-      <Link href={`/article/${article.slug}`} className="block">
+      <Link href={`/articol/${article.slug}`} className="block">
         <div className="relative">
           <Cover
             src={article.cover_image}
@@ -41,7 +41,7 @@ export function ArticleCard({ article, priority = false }: { article: ArticleSum
 export function RankedItem({ article, rank }: { article: ArticleSummary; rank: number }) {
   return (
     <li data-article-id={article.id} className="group">
-      <Link href={`/article/${article.slug}`} className="flex gap-3">
+      <Link href={`/articol/${article.slug}`} className="flex gap-3">
         <span className="w-6 shrink-0 font-display text-2xl font-black leading-none text-accent">{rank}</span>
         <span className="font-display text-[0.95rem] font-bold leading-snug text-ink">
           <CategoryBadge category={article.category} className="mr-2" />

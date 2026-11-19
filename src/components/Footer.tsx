@@ -12,7 +12,7 @@ export function Footer() {
             <Logo />
             <p className="mt-3 text-sm text-muted">{SITE.tagline}</p>
           </div>
-          <nav aria-label="Footer">
+          <nav aria-label="Subsol">
             <ul className="flex flex-wrap gap-x-8 gap-y-3">
               {NAV_LINKS.map((link) => (
                 <li key={link.href}>
@@ -32,12 +32,12 @@ export function Footer() {
           aria-label="Disclaimer"
           className="mt-10 rounded-lg border border-line border-l-4 border-l-accent bg-surface p-5 sm:p-6"
         >
-          <p className="font-display text-xs font-extrabold uppercase tracking-[0.18em] text-accent">Disclaimer</p>
+          <p className="font-display text-xs font-extrabold uppercase tracking-[0.18em] text-accent">Declinarea responsabilității</p>
           <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">{DISCLAIMER}</p>
         </aside>
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 text-xs text-muted">
-          <p>© {new Date().getFullYear()} {SITE.name}. A community project made with passion.</p>
+          <p>© {new Date().getFullYear()} {SITE.name}. Un proiect al comunității, făcut cu pasiune.</p>
           <CookieSettingsButton />
         </div>
       </div>

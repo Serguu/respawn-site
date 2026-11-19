@@ -6,7 +6,7 @@ import { EmptyState } from "./EmptyState";
 
 const PER_PAGE = 12;
 
-/** Shared listing page for /news and /reviews. */
+/** Shared listing page for /stiri and /recenzii. */
 export async function CategoryListing({
   category,
   title,
@@ -36,7 +36,7 @@ export async function CategoryListing({
       </header>
 
       {articles.length === 0 ? (
-        <EmptyState title={`No ${title.toLowerCase()} yet`} text="Check back soon." />
+        <EmptyState title={`Încă nu avem ${title.toLowerCase()}`} text="Revino în curând." />
       ) : (
         <div className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
           {articles.map((article, i) => (
@@ -46,7 +46,7 @@ export async function CategoryListing({
       )}
 
       {pages > 1 && (
-        <nav aria-label="Pagination" className="mt-14 flex items-center justify-center gap-2">
+        <nav aria-label="Paginare" className="mt-14 flex items-center justify-center gap-2">
           {Array.from({ length: pages }, (_, i) => i + 1).map((n) => (
             <Link
               key={n}

@@ -1,7 +1,11 @@
 // Global site settings - change the name/tagline here.
 export const SITE = {
   name: "RESPAWN",
-  tagline: "Gaming news & reviews, written by players.",
+  tagline: "Știri gaming și recenzii de jocuri, scrise de gameri.",
+  // Used as the homepage meta description (what Google shows under the title).
+  description:
+    "Știri din lumea gaming-ului și recenzii de jocuri video cu note, plusuri și minusuri, scrise de o comunitate de gameri din România.",
+  locale: "ro_RO",
   url: siteUrl(),
 };
 
@@ -21,11 +25,11 @@ function siteUrl() {
 export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID ?? "GTM-MLNMJV5K";
 
 export const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/news", label: "News" },
-  { href: "/reviews", label: "Reviews" },
+  { href: "/", label: "Acasă" },
+  { href: "/stiri", label: "Știri" },
+  { href: "/recenzii", label: "Recenzii" },
   { href: "/contact", label: "Contact" },
 ] as const;
 
 export const DISCLAIMER =
-  "All articles and reviews on this site are written by the participants of this project out of passion and represent personal opinions. The authors are not journalists or industry experts, and this website is a community project, not an official gaming news publication.";
+  "Toate articolele și recenziile de pe acest site sunt scrise din pasiune de participanții la acest proiect și reprezintă opinii personale. Autorii nu sunt jurnaliști sau experți din industrie, iar acest site este un proiect al comunității, nu o publicație oficială de știri din gaming.";

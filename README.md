@@ -28,7 +28,7 @@ live in `src/lib/site.ts`.
 
 | Path | What |
 | --- | --- |
-| `src/app/(site)` | Public pages: home, `/news`, `/reviews`, `/article/[slug]`, `/contact` |
+| `src/app/(site)` | Public pages (Romanian): home, `/stiri`, `/recenzii`, `/articol/[slug]`, `/contact`. Old `/news`, `/reviews`, `/article/*` URLs 301-redirect (`next.config.ts`). |
 | `src/app/editor` | Hidden CMS: login, dashboard, articles, team, preview |
 | `src/app/api/track` | View / homepage impression / click tracking |
 | `src/app/api/editor/upload` | Authenticated image upload to Supabase Storage |
@@ -49,5 +49,7 @@ Import the project, add the same env vars, deploy. `NEXT_PUBLIC_SITE_URL=https:/
 ## SEO
 
 - `robots.txt` and `sitemap.xml` (all published articles) are generated automatically; the editor is `noindex`.
-- Every public page has a canonical URL; articles also have Open Graph data and schema.org JSON-LD (`NewsArticle`, or `Review` with the score for reviews).
+- The public site is in Romanian (`<html lang="ro">`, `og:locale ro_RO`, `latin-ext` fonts for ș/ț).
+- Every public page has a canonical URL. The homepage has `WebSite` + `Organization` JSON-LD; articles have Open Graph data and JSON-LD (`NewsArticle`, or `Review` with the score) plus a breadcrumb trail.
+- Favicon, Apple icon and the default social preview image are generated in `src/app/icon.tsx`, `apple-icon.tsx`, `opengraph-image.tsx`; articles with a cover use it as their preview.
 - Google only finds a new site once it is told about it: verify the domain in Google Search Console and submit `/sitemap.xml`.

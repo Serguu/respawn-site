@@ -5,8 +5,8 @@ import { EmptyState } from "@/components/EmptyState";
 import type { TeamMember } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "Contact — The Team",
-  description: "Meet the people behind the articles and find them on social media.",
+  title: "Contact – echipa",
+  description: "Cunoaște oamenii din spatele articolelor RESPAWN și găsește-i pe rețelele sociale.",
   alternates: { canonical: "/contact" },
 };
 
@@ -17,15 +17,15 @@ export default async function ContactPage() {
     <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6">
       <header className="mb-12 max-w-2xl">
         <div className="mb-4 h-1.5 w-16 rounded-full bg-accent" aria-hidden />
-        <h1 className="font-display text-4xl font-black uppercase tracking-tight text-ink sm:text-5xl">The Team</h1>
+        <h1 className="font-display text-4xl font-black uppercase tracking-tight text-ink sm:text-5xl">Echipa</h1>
         <p className="mt-3 text-lg text-muted">
-          We&apos;re a group of players writing about the games we love. Want to reach one of us? Find us on our
-          socials below.
+          Suntem un grup de gameri care scriu despre jocurile pe care le iubim. Vrei să vorbești cu unul dintre
+          noi? Ne găsești pe rețelele sociale de mai jos.
         </p>
       </header>
 
       {members.length === 0 ? (
-        <EmptyState title="Team coming soon" text="Our team profiles will appear here shortly." />
+        <EmptyState title="Echipa vine în curând" text="Profilurile echipei vor apărea aici în curând." />
       ) : (
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {members.map((member) => (
@@ -71,7 +71,7 @@ function MemberCard({ member }: { member: TeamMember }) {
       {member.bio && <p className="mt-4 flex-1 leading-relaxed text-ink-soft">{member.bio}</p>}
 
       {links.length > 0 && (
-        <ul className="mt-5 flex flex-wrap gap-2" aria-label={`${member.name} on social media`}>
+        <ul className="mt-5 flex flex-wrap gap-2" aria-label={`${member.name} pe rețelele sociale`}>
           {links.map((platform) => (
             <li key={platform.key}>
               <a

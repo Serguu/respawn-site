@@ -10,7 +10,7 @@ export const SOCIAL_PLATFORMS = [
   { key: "tiktok", label: "TikTok" },
   { key: "discord", label: "Discord" },
   { key: "steam", label: "Steam" },
-  { key: "website", label: "Website" },
+  { key: "website", label: "Site web" },
 ] as const;
 
 export async function getTeamMembers(): Promise<TeamMember[]> {

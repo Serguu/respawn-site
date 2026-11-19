@@ -122,14 +122,14 @@ export function CookieConsent() {
     <div
       role="dialog"
       aria-live="polite"
-      aria-label="Cookie consent"
+      aria-label="Consimțământ cookie-uri"
       className="fixed inset-x-0 bottom-0 z-50 p-4 sm:p-6"
     >
       <div className="mx-auto flex max-w-3xl flex-col gap-4 rounded-lg border border-line bg-surface p-5 shadow-2xl shadow-black/50 sm:flex-row sm:items-center sm:gap-6">
         <p className="flex-1 text-sm leading-relaxed text-ink-soft">
-          We&apos;d like to use Google Analytics cookies to see which articles get read, so we know what to
-          write more of. Nothing is tracked unless you accept. You can change this anytime from{" "}
-          <span className="text-ink">Cookie settings</span> at the bottom of the page.
+          Am vrea să folosim cookie-uri Google Analytics ca să vedem ce articole se citesc, ca să știm despre ce
+          să scriem mai mult. Nu urmărim nimic dacă nu accepți. Poți schimba oricând alegerea din{" "}
+          <span className="text-ink">Setări cookie-uri</span>, în josul paginii.
         </p>
         <div className="flex shrink-0 gap-3">
           <button
@@ -137,7 +137,7 @@ export function CookieConsent() {
             onClick={() => decide("denied")}
             className="flex-1 rounded border border-line px-5 py-2.5 font-display text-sm font-bold uppercase tracking-wider text-ink hover:border-ink-soft sm:flex-none"
           >
-            Reject
+            Refuz
           </button>
           <button
             type="button"
@@ -155,7 +155,7 @@ export function CookieConsent() {
 export function CookieSettingsButton() {
   return (
     <button type="button" onClick={openCookieSettings} className="underline hover:text-accent">
-      Cookie settings
+      Setări cookie-uri
     </button>
   );
 }

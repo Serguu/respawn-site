@@ -2,15 +2,15 @@ import Link from "next/link";
 import type { Category } from "@/lib/types";
 
 const TABS: { value: Category | undefined; label: string; href: string }[] = [
-  { value: undefined, label: "All", href: "/" },
-  { value: "news", label: "News", href: "/?category=news" },
-  { value: "review", label: "Reviews", href: "/?category=review" },
+  { value: undefined, label: "Toate", href: "/" },
+  { value: "news", label: "Știri", href: "/?category=news" },
+  { value: "review", label: "Recenzii", href: "/?category=review" },
 ];
 
 /** Homepage filter: keeps News and Reviews clearly separated. */
 export function CategoryTabs({ active }: { active?: Category }) {
   return (
-    <nav aria-label="Filter by category" className="flex gap-2">
+    <nav aria-label="Filtrează după categorie" className="flex gap-2">
       {TABS.map((tab) => {
         const isActive = tab.value === active;
         const dot = tab.value === "news" ? "bg-news" : tab.value === "review" ? "bg-review" : "bg-ink";
