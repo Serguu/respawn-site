@@ -44,4 +44,10 @@ live in `src/lib/site.ts`.
 
 ## Deploy (Vercel)
 
-Import the project, add the same env vars plus `NEXT_PUBLIC_SITE_URL=https://your-domain`, deploy.
+Import the project, add the same env vars, deploy. `NEXT_PUBLIC_SITE_URL=https://your-domain` is only needed once you use a custom domain; without it the sitemap, robots.txt and canonical links use the Vercel production domain.
+
+## SEO
+
+- `robots.txt` and `sitemap.xml` (all published articles) are generated automatically; the editor is `noindex`.
+- Every public page has a canonical URL; articles also have Open Graph data and schema.org JSON-LD (`NewsArticle`, or `Review` with the score for reviews).
+- Google only finds a new site once it is told about it: verify the domain in Google Search Console and submit `/sitemap.xml`.

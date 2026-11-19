@@ -7,6 +7,7 @@ import type { TeamMember } from "@/lib/types";
 export const metadata: Metadata = {
   title: "Contact — The Team",
   description: "Meet the people behind the articles and find them on social media.",
+  alternates: { canonical: "/contact" },
 };
 
 export default async function ContactPage() {
