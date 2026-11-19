@@ -30,17 +30,15 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
     getMostRead(5, category),
     category
       ? Promise.resolve([])
-      : Promise.all(CATEGORY_ORDER.map((c) => getPublishedArticles({ category: c, limit: 9 }))),
+      : Promise.all(CATEGORY_ORDER.map((c) => getPublishedArticles({ category: c, limit: 4 }))),
     category ? Promise.resolve([]) : getTopRecommendationsSafe(3),
   ]);
   const more = category ? await getPublishedArticles({ category, limit: 8, offset: 5 }) : [];
 
   const [featured, secondary, ...rest] = latest;
-  const shown = new Set(latest.map((a) => a.id));
-  const sections = perCategory.map((list, i) => ({
-    category: CATEGORY_ORDER[i],
-    articles: list.filter((a) => !shown.has(a.id)).slice(0, 4),
-  }));
+  // Each "Ultimele …" row is simply that category's newest articles. (It used to skip ones already shown
+  // at the top, which hid the newest story of a category and could empty a row entirely.)
+  const sections = perCategory.map((articles, i) => ({ category: CATEGORY_ORDER[i], articles }));
 
   return (
     <HomeTracker>

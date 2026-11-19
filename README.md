@@ -52,7 +52,7 @@ Import the project, add the same env vars, deploy. `NEXT_PUBLIC_SITE_URL=https:/
 | --- | --- |
 | `/stiri`, `/recenzii`, `/articole` | The three article categories (`news`, `review`, `article` = opinions/analysis/guides). Defined in `src/lib/categories.ts`. |
 | `/recomandari` | Games recommended by visitors. Submissions wait in Editor → Recommendations until approved; visitors can upvote (one vote each, anonymous hash, no cookie). Honeypot + rate limit against spam. |
-| `/joaca` | Mini-games (Snake with the "R" head, aim trainer, trivia), one picked at random per visit; `?joc=snake|aim|trivia` links to one. Personal bests stay in the visitor's browser; scores can also be saved to weekly/all-time leaderboards (best per nickname, `game_scores` table) — each round gets a signed single-use ticket and the server checks the score is plausible for the time played; Editor → Leaderboards hides or deletes entries. Trivia questions are managed in Editor → Trivia (built-in set until there are 5 of your own). |
+| `/joaca` | Mini-games (Snake with the "R" head, aim trainer, trivia, Respawn Run endless runner, Respawn Fly jetpack flyer), one picked at random per visit; `?joc=snake|aim|trivia` links to one. Personal bests stay in the visitor's browser; scores can also be saved to weekly/all-time leaderboards (best per nickname, `game_scores` table) — each round gets a signed single-use ticket and the server checks the score is plausible for the time played; Editor → Leaderboards hides or deletes entries. Trivia questions are managed in Editor → Trivia (built-in set until there are 5 of your own). |
 | `/cauta` | Search over published articles, diacritics-insensitive (`noindex`). |
 | `/rss.xml` | RSS feed of the latest 30 articles. |
 
