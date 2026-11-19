@@ -1,24 +1,21 @@
 import type { Category } from "@/lib/types";
+import { CATEGORIES } from "@/lib/categories";
 import { scoreLabel, scoreTone } from "@/lib/format";
 
 export function CategoryBadge({ category, className = "" }: { category: Category; className?: string }) {
-  const isReview = category === "review";
+  const c = CATEGORIES[category];
   return (
     <span
-      className={`inline-block rounded-sm px-1.5 py-0.5 align-[0.15em] font-display text-[0.7em] font-extrabold uppercase leading-none tracking-wider ${
-        isReview ? "bg-review text-accent-ink" : "bg-news text-accent-ink"
-      } ${className}`}
+      className={`inline-block rounded-sm px-1.5 py-0.5 align-[0.15em] font-display text-[0.7em] font-extrabold uppercase leading-none tracking-wider text-accent-ink ${c.bg} ${className}`}
     >
-      {isReview ? "Recenzie" : "Știre"}
+      {c.singular}
     </span>
   );
 }
 
 export function CategoryLabel({ category }: { category: Category }) {
   return (
-    <span className={`font-semibold ${category === "review" ? "text-review" : "text-news"}`}>
-      {category === "review" ? "Recenzii" : "Știri"}
-    </span>
+    <span className={`font-semibold ${CATEGORIES[category].text}`}>{CATEGORIES[category].label}</span>
   );
 }
 

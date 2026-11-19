@@ -1,4 +1,4 @@
-export type Category = "news" | "review";
+export type Category = "news" | "review" | "article";
 export type Status = "draft" | "published";
 
 export type ArticleSummary = {
@@ -12,6 +12,7 @@ export type ArticleSummary = {
   view_count: number;
   review_score: number | null;
   author_name: string | null;
+  reading_minutes?: number;
 };
 
 export type Article = ArticleSummary & {
@@ -34,4 +35,25 @@ export type TeamMember = {
   avatar_url: string | null;
   socials: Record<string, string>;
   sort_order: number;
+};
+
+export type RecommendationStatus = "pending" | "approved" | "rejected";
+
+export type Recommendation = {
+  id: string;
+  game: string;
+  platform: string;
+  reason: string;
+  author_name: string;
+  status: RecommendationStatus;
+  votes: number;
+  created_at: Date;
+};
+
+export type TriviaQuestion = {
+  id: string;
+  question: string;
+  answers: string[];
+  correct: number;
+  active: boolean;
 };

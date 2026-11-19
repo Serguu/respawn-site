@@ -7,9 +7,9 @@ export function SectionHeading({
 }: {
   title: string;
   href?: string;
-  accent?: "accent" | "news" | "review";
+  accent?: "accent" | "news" | "review" | "article";
 }) {
-  const bar = { accent: "bg-accent", news: "bg-news", review: "bg-review" }[accent];
+  const bar = { accent: "bg-accent", news: "bg-news", review: "bg-review", article: "bg-article" }[accent];
   return (
     <div className="mb-6 flex items-end justify-between gap-4 border-b border-line pb-3">
       <h2 className="flex items-center gap-3 font-display text-2xl font-black uppercase tracking-tight text-ink">

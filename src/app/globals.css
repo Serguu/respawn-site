@@ -20,6 +20,7 @@
   --color-accent-ink: #1e1f1e;
   --color-news: #6ea8fe;
   --color-review: #f8d435;
+  --color-article: #c38bff;
   --color-score-great: #5fd38d;
   --color-score-good: #f8d435;
   --color-score-bad: #f2695c;
@@ -146,3 +147,109 @@ body {
 .tiptap img.ProseMirror-selectednode {
   outline: 3px solid var(--color-accent);
 }
+
+/* ---------- Mini-games ---------- */
+@keyframes target-in {
+  from { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+@keyframes pop {
+  from { opacity: 1; transform: translate(-50%, -50%); }
+  to { opacity: 0; transform: translate(-50%, -160%); }
+}
+
+/* ---------- Homepage ticker ---------- */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker-track {
+  animation: ticker 45s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+}
+
+/* ---------- Article body: editor extras ---------- */
+.article-body small { font-size: 0.8em; color: var(--color-muted); }
+.article-body mark {
+  background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  color: var(--color-ink);
+  padding: 0 0.15em;
+  border-radius: 0.15em;
+}
+.article-body blockquote cite {
+  display: block;
+  margin-top: 0.6em;
+  font-size: 0.75em;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+.article-body blockquote cite::before { content: "— "; }
+.article-body blockquote > * + * { margin-top: 0.6em; }
+
+/* Big centred pull quote */
+.article-body blockquote[data-variant="pull"] {
+  border: 0;
+  padding: 0.5em 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 900;
+  font-size: 1.75em;
+  line-height: 1.2;
+}
+.article-body blockquote[data-variant="pull"]::before {
+  content: "“";
+  display: block;
+  font-size: 2em;
+  line-height: 0.6;
+  color: var(--color-accent);
+}
+
+/* Boxed quote */
+.article-body blockquote[data-variant="box"] {
+  border: 1px solid var(--color-line);
+  border-left: 4px solid var(--color-accent);
+  background: var(--color-surface);
+  border-radius: 0.75rem;
+  padding: 1.1em 1.4em;
+  font-size: 1.05em;
+}
+
+/* Speech bubble (e.g. what a character or dev said) */
+.article-body blockquote[data-variant="chat"] {
+  position: relative;
+  border: 0;
+  background: var(--color-surface-2);
+  border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
+  padding: 1em 1.3em;
+  font-size: 1.05em;
+  font-style: normal;
+  max-width: 85%;
+}
+
+/* "Surse" box: small, quiet text at the end of an article */
+.article-body .article-sources {
+  margin-top: 2.5em;
+  border-top: 1px solid var(--color-line);
+  padding-top: 1em;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+.article-body .article-sources::before {
+  content: "Surse";
+  display: block;
+  margin-bottom: 0.5em;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+.article-body .article-sources > * + * { margin-top: 0.5em; }
+.article-body .article-sources li + li { margin-top: 0.2em; }
+.article-body .article-sources a { color: var(--color-ink-soft); word-break: break-word; }

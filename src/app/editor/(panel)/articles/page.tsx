@@ -2,6 +2,7 @@ import Link from "next/link";
 import { listArticles } from "@/lib/editor-data";
 import { formatDate, formatNumber } from "@/lib/format";
 import { ctr } from "@/lib/stats";
+import { CATEGORIES } from "@/lib/categories";
 
 export default async function ArticlesPage() {
   const articles = await listArticles();
@@ -44,8 +45,8 @@ export default async function ArticlesPage() {
                     </Link>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={a.category === "review" ? "text-review" : "text-news"}>
-                      {a.category === "review" ? "Review" : "News"}
+                    <span className={CATEGORIES[a.category].text}>
+                      {{ news: "News", review: "Review", article: "Article" }[a.category]}
                     </span>
                   </td>
                   <td className="px-4 py-3">

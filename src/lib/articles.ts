@@ -14,7 +14,9 @@ function normalise<T extends { review_score: unknown }>(row: T): T {
 // otherwise `next build` fails on machines without DATABASE_URL.
 const summaryColumns = () => sql`
   a.id, a.slug, a.title, a.excerpt, a.cover_image, a.category, a.published_at,
-  a.view_count, a.review_score, e.display_name as author_name
+  a.view_count, a.review_score, e.display_name as author_name,
+  greatest(1, round(coalesce(array_length(regexp_split_to_array(
+    trim(regexp_replace(a.content_html, '<[^>]+>', ' ', 'g')), '\s+'), 1), 0) / 220.0))::int as reading_minutes
 `;
 
 export async function getPublishedArticles(opts: {
@@ -64,4 +66,39 @@ export async function getPublishedBySlug(slug: string): Promise<Article | null> 
     where a.slug = ${slug} and a.status = 'published'
   `;
   return row ? normalise(row) : null;
+}
+
+/**
+ * Site search over published titles, excerpts and text. Diacritics are ignored on both sides,
+ * so "stiri" finds "știri"; title matches rank first.
+ */
+export async function searchArticles(query: string, limit = 30): Promise<ArticleSummary[]> {
+  const words = query
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .split(/\s+/)
+    .map((w) => w.replace(/[%_\\]/g, ""))
+    .filter((w) => w.length >= 2)
+    .slice(0, 6);
+  if (words.length === 0) return [];
+
+  const fold = (column: ReturnType<typeof sql>) =>
+    sql`translate(lower(${column}), 'ășşțţâîáéíóúàèìòùäëïöüçñ', 'assttaiaeiouaeiouaeioucn')`;
+  const haystack = fold(sql`a.title || ' ' || a.excerpt || ' ' || regexp_replace(a.content_html, '<[^>]+>', ' ', 'g')`);
+  const conditions = words.map((w) => sql`${haystack} like ${"%" + w + "%"}`);
+  const where = conditions.reduce((acc, c) => sql`${acc} and ${c}`);
+  const titleHits = words
+    .map((w) => sql`(${fold(sql`a.title`)} like ${"%" + w + "%"})::int`)
+    .reduce((acc, c) => sql`${acc} + ${c}`);
+
+  const rows = await sql<ArticleSummary[]>`
+    select ${summaryColumns()}
+    from articles a
+    left join editors e on e.id = a.author_id
+    where a.status = 'published' and ${where}
+    order by ${titleHits} desc, a.published_at desc
+    limit ${limit}
+  `;
+  return rows.map(normalise);
 }

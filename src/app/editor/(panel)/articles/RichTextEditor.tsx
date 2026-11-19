@@ -5,8 +5,11 @@ import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Youtube from "@tiptap/extension-youtube";
 import { Placeholder } from "@tiptap/extensions";
+import TextAlign from "@tiptap/extension-text-align";
+import Highlight from "@tiptap/extension-highlight";
 import { useRef, useState } from "react";
 import { uploadFile } from "../../upload-client";
+import { Cite, QUOTE_STYLES, QuoteStyle, Small, Sources } from "./extensions";
 
 export type EditorValue = { html: string; json: JSONContent | null };
 
@@ -27,6 +30,12 @@ export function RichTextEditor({
       Image,
       Youtube.configure({ nocookie: true, modestBranding: true }),
       Placeholder.configure({ placeholder: "Start writing your article…" }),
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+      Highlight,
+      Small,
+      Cite,
+      QuoteStyle,
+      Sources,
     ],
     content: initialContent ?? "",
     editorProps: {
@@ -54,8 +63,19 @@ function Toolbar({ editor }: { editor: Editor }) {
       italic: e.isActive("italic"),
       underline: e.isActive("underline"),
       strike: e.isActive("strike"),
-      h2: e.isActive("heading", { level: 2 }),
-      h3: e.isActive("heading", { level: 3 }),
+      block: e.isActive("heading", { level: 2 })
+        ? "h2"
+        : e.isActive("heading", { level: 3 })
+          ? "h3"
+          : e.isActive("heading", { level: 4 })
+            ? "h4"
+            : "p",
+      highlight: e.isActive("highlight"),
+      small: e.isActive("small"),
+      cite: e.isActive("cite"),
+      sources: e.isActive("sources"),
+      quoteVariant: (e.getAttributes("blockquote").variant as string | null) ?? "",
+      align: (["center", "right", "justify"] as const).find((a) => e.isActive({ textAlign: a })) ?? "left",
       bullet: e.isActive("bulletList"),
       ordered: e.isActive("orderedList"),
       quote: e.isActive("blockquote"),
@@ -99,12 +119,23 @@ function Toolbar({ editor }: { editor: Editor }) {
 
   return (
     <div className="sticky top-0 z-10 flex flex-wrap items-center gap-1 border-b border-line bg-surface px-2 py-2">
-      <Btn label="Heading 2" active={state.h2} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
-        H2
-      </Btn>
-      <Btn label="Heading 3" active={state.h3} onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>
-        H3
-      </Btn>
+      <select
+        aria-label="Text style"
+        title="Text style"
+        value={state.block}
+        onChange={(e) => {
+          const v = e.target.value;
+          const chain = editor.chain().focus();
+          if (v === "p") chain.setParagraph().run();
+          else chain.setHeading({ level: Number(v.slice(1)) as 2 | 3 | 4 }).run();
+        }}
+        className="rounded border border-line bg-bg px-2 py-1.5 text-sm font-semibold text-ink"
+      >
+        <option value="p">Paragraph</option>
+        <option value="h2">Heading 2</option>
+        <option value="h3">Heading 3</option>
+        <option value="h4">Heading 4</option>
+      </select>
       <Sep />
       <Btn label="Bold" active={state.bold} onClick={() => editor.chain().focus().toggleBold().run()}>
         <b>B</b>
@@ -118,9 +149,21 @@ function Toolbar({ editor }: { editor: Editor }) {
       <Btn label="Strikethrough" active={state.strike} onClick={() => editor.chain().focus().toggleStrike().run()}>
         <s>S</s>
       </Btn>
+      <Btn label="Highlight (yellow marker)" active={state.highlight} onClick={() => editor.chain().focus().toggleHighlight().run()}>
+        <span className="rounded-sm bg-accent/40 px-1 text-ink">H</span>
+      </Btn>
+      <Btn label="Small text" active={state.small} onClick={() => editor.chain().focus().toggleMark("small").run()}>
+        <span className="text-xs">aA</span>
+      </Btn>
       <Btn label="Link" active={state.link} onClick={setLink}>
         Link
       </Btn>
+      <Sep />
+      {(["left", "center", "right"] as const).map((a) => (
+        <Btn key={a} label={`Align ${a}`} active={state.align === a} onClick={() => editor.chain().focus().setTextAlign(a).run()}>
+          <AlignIcon align={a} />
+        </Btn>
+      ))}
       <Sep />
       <Btn label="Bullet list" active={state.bullet} onClick={() => editor.chain().focus().toggleBulletList().run()}>
         • List
@@ -130,6 +173,46 @@ function Toolbar({ editor }: { editor: Editor }) {
       </Btn>
       <Btn label="Quote" active={state.quote} onClick={() => editor.chain().focus().toggleBlockquote().run()}>
         “ Quote
+      </Btn>
+      {state.quote && (
+        <>
+          <select
+            aria-label="Quote style"
+            title="Quote style"
+            value={state.quoteVariant}
+            onChange={(e) =>
+              editor.chain().focus().updateAttributes("blockquote", { variant: e.target.value || null }).run()
+            }
+            className="rounded border border-accent bg-bg px-2 py-1.5 text-sm font-semibold text-ink"
+          >
+            {QUOTE_STYLES.map((q) => (
+              <option key={q.label} value={q.value ?? ""}>
+                {q.label}
+              </option>
+            ))}
+          </select>
+          <Btn label="Mark selected text as the quote's author" active={state.cite} onClick={() => editor.chain().focus().toggleMark("cite").run()}>
+            — Author
+          </Btn>
+        </>
+      )}
+      <Btn
+        label={state.sources ? "Remove the Sources box (keeps the text)" : "Sources box (small text for links and references)"}
+        active={state.sources}
+        onClick={() => {
+          if (state.sources) editor.chain().focus().lift("sources").run();
+          else
+            editor
+              .chain()
+              .focus()
+              .insertContent({
+                type: "sources",
+                content: [{ type: "bulletList", content: [{ type: "listItem", content: [{ type: "paragraph" }] }] }],
+              })
+              .run();
+        }}
+      >
+        Sources
       </Btn>
       <Btn label="Divider" onClick={() => editor.chain().focus().setHorizontalRule().run()}>
         —
@@ -185,4 +268,15 @@ function Btn({
 
 function Sep() {
   return <span className="mx-1 h-5 w-px bg-line" aria-hidden />;
+}
+
+function AlignIcon({ align }: { align: "left" | "center" | "right" }) {
+  const lines = { left: ["M4 6h16", "M4 12h10", "M4 18h13"], center: ["M4 6h16", "M7 12h10", "M5.5 18h13"], right: ["M4 6h16", "M10 12h10", "M7 18h13"] }[align];
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+      {lines.map((d) => (
+        <path key={d} d={d} />
+      ))}
+    </svg>
+  );
 }

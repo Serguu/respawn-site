@@ -1,10 +1,10 @@
 // Global site settings - change the name/tagline here.
 export const SITE = {
-  name: "RESPAWN",
+  name: "RespawnCentral",
   tagline: "Știri gaming și recenzii de jocuri, scrise de gameri.",
   // Used as the homepage meta description (what Google shows under the title).
   description:
-    "Știri din lumea gaming-ului și recenzii de jocuri video cu note, plusuri și minusuri, scrise de o comunitate de gameri din România.",
+    "Știri din lumea gaming-ului și recenzii de jocuri video cu note, plusuri și minusuri, scrise de o comunitate de gameri din România. Plus recomandări de la cititori și mini-jocuri.",
   locale: "ro_RO",
   url: siteUrl(),
 };
@@ -24,9 +24,12 @@ function siteUrl() {
 // override with NEXT_PUBLIC_GTM_ID, or set it to "" to turn tracking off.
 export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID ?? "GTM-MLNMJV5K";
 
+// The logo links home, so "Acasă" isn't repeated in the menu.
 export const NAV_LINKS = [
-  { href: "/", label: "Acasă" },
   { href: "/stiri", label: "Știri" },
   { href: "/recenzii", label: "Recenzii" },
+  { href: "/articole", label: "Articole" },
+  { href: "/recomandari", label: "Recomandări" },
+  { href: "/joaca", label: "Joacă" },
   { href: "/contact", label: "Contact" },
 ] as const;

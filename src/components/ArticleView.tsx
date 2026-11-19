@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Article } from "@/lib/types";
 import { formatDate, formatNumber, readingTime } from "@/lib/format";
+import { CATEGORIES } from "@/lib/categories";
 import { CategoryBadge, ScoreRing } from "./Badges";
 import { ReviewSummary } from "./ReviewSummary";
 import { ShareButtons } from "./ShareButtons";
@@ -19,9 +20,9 @@ export function ArticleView({ article, shareUrl }: { article: Article; shareUrl?
     <>
       <header className="mx-auto max-w-3xl px-4 pt-10 sm:px-6 sm:pt-14">
         <Link
-          href={isReview ? "/recenzii" : "/stiri"}
+          href={CATEGORIES[article.category].path}
           className="inline-block font-display text-base hover:opacity-80"
-          aria-label={`Înapoi la ${isReview ? "Recenzii" : "Știri"}`}
+          aria-label={`Înapoi la ${CATEGORIES[article.category].label}`}
         >
           <CategoryBadge category={article.category} />
         </Link>

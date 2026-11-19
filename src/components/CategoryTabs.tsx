@@ -1,19 +1,19 @@
 import Link from "next/link";
+import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
 import type { Category } from "@/lib/types";
 
 const TABS: { value: Category | undefined; label: string; href: string }[] = [
   { value: undefined, label: "Toate", href: "/" },
-  { value: "news", label: "Știri", href: "/?category=news" },
-  { value: "review", label: "Recenzii", href: "/?category=review" },
+  ...CATEGORY_ORDER.map((c) => ({ value: c, label: CATEGORIES[c].label, href: `/?category=${c}` })),
 ];
 
 /** Homepage filter: keeps News and Reviews clearly separated. */
 export function CategoryTabs({ active }: { active?: Category }) {
   return (
-    <nav aria-label="Filtrează după categorie" className="flex gap-2">
+    <nav aria-label="Filtrează după categorie" className="flex flex-wrap gap-2">
       {TABS.map((tab) => {
         const isActive = tab.value === active;
-        const dot = tab.value === "news" ? "bg-news" : tab.value === "review" ? "bg-review" : "bg-ink";
+        const dot = tab.value ? CATEGORIES[tab.value].bg : "bg-ink";
         return (
           <Link
             key={tab.label}

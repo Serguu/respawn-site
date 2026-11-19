@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { countPublished, getPublishedArticles } from "@/lib/articles";
+import { CATEGORIES } from "@/lib/categories";
 import type { Category } from "@/lib/types";
 import { ArticleCard } from "./ArticleCard";
 import { EmptyState } from "./EmptyState";
@@ -25,7 +26,7 @@ export async function CategoryListing({
     countPublished(category),
   ]);
   const pages = Math.max(1, Math.ceil(total / PER_PAGE));
-  const bar = category === "news" ? "bg-news" : "bg-review";
+  const bar = CATEGORIES[category].bg;
 
   return (
     <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6">

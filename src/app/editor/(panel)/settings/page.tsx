@@ -1,11 +1,12 @@
-import { DEFAULT_DISCLAIMER, getDisclaimer } from "@/lib/settings";
+import { DEFAULT_DISCLAIMER, getDisclaimer, getSiteSocials, SITE_SOCIALS } from "@/lib/settings";
 import { requireEditor } from "@/lib/session";
 import { Panel } from "../../ui";
 import { DisclaimerForm } from "./DisclaimerForm";
+import { SocialsForm } from "./SocialsForm";
 
 export default async function SettingsPage() {
   await requireEditor();
-  const disclaimer = await getDisclaimer();
+  const [disclaimer, socials] = await Promise.all([getDisclaimer(), getSiteSocials()]);
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -17,6 +18,11 @@ export default async function SettingsPage() {
       <Panel title="Footer disclaimer">
         <p className="mb-4 text-sm text-muted">The box at the bottom of every public page.</p>
         <DisclaimerForm disclaimer={disclaimer} defaults={DEFAULT_DISCLAIMER} />
+      </Panel>
+
+      <Panel title="Site social accounts">
+        <p className="mb-4 text-sm text-muted">Shown as icons in the footer. Leave empty to hide one.</p>
+        <SocialsForm socials={socials} platforms={SITE_SOCIALS} />
       </Panel>
     </div>
   );

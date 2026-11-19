@@ -4,7 +4,15 @@ import type { JSONContent } from "@tiptap/react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { slugify } from "@/lib/format";
+import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
 import type { Article, Category } from "@/lib/types";
+
+const EDITOR_LABEL: Record<Category, string> = { news: "News", review: "Review", article: "Article" };
+const EDITOR_HINT: Record<Category, string> = {
+  news: "Current news → shown under Știri.",
+  review: "A scored game review → shown under Recenzii.",
+  article: "Opinion, analysis, guide or fun facts → shown under Articole.",
+};
 import { uploadFile } from "../../upload-client";
 import { Field, inputClass, Panel, PrimaryButton, SecondaryButton } from "../../ui";
 import { saveArticle, type SaveState } from "./actions";
@@ -155,26 +163,25 @@ export function ArticleForm({ article, justCreated = false }: { article: Article
         </Panel>
 
         <Panel title="Category">
-          <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Category">
-            {(["news", "review"] as const).map((c) => (
+          <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Category">
+            {CATEGORY_ORDER.map((c) => (
               <button
                 key={c}
                 type="button"
                 role="radio"
                 aria-checked={category === c}
                 onClick={() => setCategory(c)}
-                className={`rounded-md border px-3 py-2.5 font-display text-sm font-extrabold uppercase tracking-wider transition-colors ${
+                className={`rounded-md border px-2 py-2.5 font-display text-xs font-extrabold uppercase tracking-wider transition-colors ${
                   category === c
-                    ? c === "news"
-                      ? "border-news bg-news text-accent-ink"
-                      : "border-review bg-review text-accent-ink"
+                    ? `${CATEGORIES[c].border} ${CATEGORIES[c].bg} text-accent-ink`
                     : "border-line text-ink-soft hover:border-ink-soft"
                 }`}
               >
-                {c === "news" ? "News" : "Review"}
+                {EDITOR_LABEL[c]}
               </button>
             ))}
           </div>
+          <p className="mt-3 text-xs text-muted">{EDITOR_HINT[category]}</p>
         </Panel>
 
         {category === "review" && (
