@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { AimTrainer } from "./AimTrainer";
+import { FlyerGame } from "./FlyerGame";
+import { RunnerGame } from "./RunnerGame";
 import { GAMES, type GameKey } from "./games";
 import { Leaderboard } from "./Leaderboard";
 import { SnakeGame } from "./SnakeGame";
@@ -55,6 +57,8 @@ export function GameHub({ initial, trivia }: { initial: GameKey; trivia: TriviaI
           {game === "snake" && <SnakeGame />}
           {game === "aim" && <AimTrainer />}
           {game === "trivia" && <TriviaGame bank={trivia} />}
+          {game === "runner" && <RunnerGame />}
+          {game === "flyer" && <FlyerGame />}
         </div>
         <Leaderboard game={game} title={GAMES.find((g) => g.key === game)!.label} />
       </div>

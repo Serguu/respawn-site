@@ -253,3 +253,24 @@ body {
 .article-body .article-sources > * + * { margin-top: 0.5em; }
 .article-body .article-sources li + li { margin-top: 0.2em; }
 .article-body .article-sources a { color: var(--color-ink-soft); word-break: break-word; }
+
+/* ---------- Loading ---------- */
+.skeleton {
+  background: linear-gradient(90deg, var(--color-surface) 0%, var(--color-surface-2) 50%, var(--color-surface) 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+.logo-loader {
+  animation: logo-pulse 1.1s ease-in-out infinite;
+}
+@keyframes logo-pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 12px #f8d43544; }
+  50% { transform: scale(1.08) rotate(-6deg); box-shadow: 0 0 28px #f8d43599; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton, .logo-loader { animation: none; }
+}

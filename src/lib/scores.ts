@@ -3,11 +3,11 @@ import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { sql } from "./db";
 import { ifTableExists } from "./migrations";
 
-export type GameId = "snake" | "aim" | "trivia";
+export type GameId = "snake" | "aim" | "trivia" | "runner" | "flyer";
 export type Period = "week" | "all";
 export type LeaderboardEntry = { name: string; score: number; duration_ms: number; created_at: Date };
 
-export const GAME_IDS: GameId[] = ["snake", "aim", "trivia"];
+export const GAME_IDS: GameId[] = ["snake", "aim", "trivia", "runner", "flyer"];
 export const isGameId = (v: unknown): v is GameId => GAME_IDS.includes(v as GameId);
 
 /**
@@ -22,6 +22,10 @@ const RULES: Record<GameId, (score: number, durationMs: number) => boolean> = {
   aim: (s, d) => s > 0 && s <= 200 && d >= 29_000,
   // 10 questions; nobody reads and answers one in under 0.8 s.
   trivia: (s, d) => s > 0 && s <= 10 && d >= 8_000,
+  // 1 m = 10 px; top speed is 15 px a frame at 60 fps = 90 m/s, so allow at most that on average.
+  runner: (s, d) => s > 0 && s <= 200_000 && d >= 1000 && s <= (d / 1000) * 90 + 5,
+  // The first wall takes ~3 s to reach, then one every ~0.95 s at the fastest.
+  flyer: (s, d) => s > 0 && s <= 10_000 && d >= 2500 && s <= (d / 1000) * 1.2 + 1,
 };
 
 const MAX_RUN_AGE_MS = 2 * 60 * 60 * 1000;

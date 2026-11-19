@@ -4,7 +4,7 @@ import { GAME_IDS, getRecentScores, isGameId } from "@/lib/scores";
 import { requireEditor } from "@/lib/session";
 import { moderateScore } from "./actions";
 
-const LABEL = { snake: "Snake", aim: "Aim trainer", trivia: "Trivia" } as const;
+const LABEL = { snake: "Snake", aim: "Aim trainer", trivia: "Trivia", runner: "Respawn Run", flyer: "Respawn Fly" } as const;
 
 export default async function LeaderboardsAdminPage({ searchParams }: PageProps<"/editor/leaderboards">) {
   await requireEditor();

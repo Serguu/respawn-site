@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { startRun, submitScore, type SubmitResult } from "@/app/(site)/joaca/actions";
+import { Skeleton } from "../Loading";
 import type { GameKey } from "./games";
 
 type Entry = { name: string; score: number; duration_ms: number; created_at: string };
@@ -33,6 +34,8 @@ export function usePlayerName() {
 export function formatScore(game: GameKey, score: number, durationMs: number) {
   if (game === "aim") return `${score} ${score === 1 ? "țintă" : score < 20 ? "ținte" : "de ținte"}`;
   if (game === "trivia") return `${score}/10 · ${Math.round(durationMs / 1000)}s`;
+  if (game === "runner") return `${score} m`;
+  if (game === "flyer") return `${score} ${score === 1 ? "zid" : score < 20 ? "ziduri" : "de ziduri"}`;
   return `${score} p`;
 }
 
@@ -196,7 +199,15 @@ export function Leaderboard({ game, title }: { game: GameKey; title: string }) {
       </div>
 
       {entries === null ? (
-        <p className="mt-4 text-sm text-muted">Se încarcă…</p>
+        <div className="mt-3 space-y-2" role="status" aria-label="Se încarcă clasamentul">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex items-center gap-3 px-2 py-1.5">
+              <Skeleton className="h-5 w-6" />
+              <Skeleton className="h-4 flex-1" />
+              <Skeleton className="h-4 w-14" />
+            </div>
+          ))}
+        </div>
       ) : entries.length === 0 ? (
         <p className="mt-4 text-sm text-muted">
           {period === "week" ? "Nimeni săptămâna asta. Locul 1 e liber!" : "Fii primul în clasament!"}

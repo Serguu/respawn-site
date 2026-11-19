@@ -72,7 +72,7 @@ const MIGRATIONS = `
     if to_regclass('public.game_scores') is null then
       create table game_scores (
         id           uuid primary key default gen_random_uuid(),
-        game         text not null check (game in ('snake', 'aim', 'trivia')),
+        game         text not null,
         name         text not null,
         score        integer not null check (score >= 0),
         duration_ms  integer not null default 0,
@@ -82,6 +82,14 @@ const MIGRATIONS = `
         created_at   timestamptz not null default now()
       );
       create index game_scores_board_idx on game_scores (game, hidden, created_at desc);
+    end if;
+    -- Allowed games (Respawn Run and Fly added later); only touched when the list changed.
+    if not exists (
+      select 1 from pg_constraint
+      where conname = 'game_scores_game_check' and pg_get_constraintdef(oid) like '%''flyer''%'
+    ) then
+      alter table game_scores drop constraint if exists game_scores_game_check;
+      alter table game_scores add constraint game_scores_game_check check (game in ('snake', 'aim', 'trivia', 'runner', 'flyer'));
     end if;
   end $$;
 

@@ -202,6 +202,8 @@ export function SnakeGame() {
   }, [setupBoard, draw]);
 
   const onKey = (e: React.KeyboardEvent) => {
+    // Keys typed into the nickname field (or pressed on a button) inside the board aren't game controls.
+    if (e.target !== e.currentTarget) return;
     const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     if (DIRS[key]) {
       e.preventDefault();
