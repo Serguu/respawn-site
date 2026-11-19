@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { SaveScore, useRun } from "./Leaderboard";
 import { primaryButton, ShareScore, Stat, useBestScore } from "./shared";
 
 const GRID = 20;
@@ -50,6 +51,7 @@ export function SnakeGame() {
   const [score, setScore] = useState(0);
   const [record, setRecord] = useState(false);
   const { best, submit } = useBestScore("snake");
+  const run = useRun("snake");
 
   const draw = useCallback(() => {
     const c = canvas.current;
@@ -138,11 +140,13 @@ export function SnakeGame() {
     setRecord(false);
   }, [setupBoard]);
 
+  const { begin: beginRun, end: endRun } = run;
   const start = useCallback(() => {
     reset();
+    beginRun();
     setPhase("playing");
     wrap.current?.focus();
-  }, [reset]);
+  }, [reset, beginRun]);
 
   const turn = useCallback((d: Point) => {
     const g = game.current;
@@ -169,6 +173,7 @@ export function SnakeGame() {
           head.x < 0 || head.y < 0 || head.x >= GRID || head.y >= GRID || body.some((s) => s.x === head.x && s.y === head.y);
         if (dead) {
           draw();
+          endRun();
           setRecord(submit(g.score));
           setPhase("over");
           return;
@@ -186,7 +191,7 @@ export function SnakeGame() {
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [phase, draw, submit]);
+  }, [phase, draw, submit, endRun]);
 
   // First paint + redraw on resize.
   useEffect(() => {
@@ -297,6 +302,9 @@ export function SnakeGame() {
                   <ShareScore text={`Am făcut ${score} puncte la Snake pe RespawnCentral. Mă bați?`} />
                 )}
               </div>
+              {phase === "over" && score > 0 && (
+                <SaveScore game="snake" score={score} durationMs={run.duration} token={run.token} />
+              )}
             </div>
           </div>
         )}

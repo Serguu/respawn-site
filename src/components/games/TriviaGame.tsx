@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SaveScore, useRun } from "./Leaderboard";
 import { primaryButton, ShareScore, Stat, useBestScore } from "./shared";
 
 export type TriviaItem = { question: string; answers: string[]; correct: number };
@@ -34,6 +35,7 @@ export function TriviaGame({ bank }: { bank: TriviaItem[] }) {
   const [score, setScore] = useState(0);
   const [record, setRecord] = useState(false);
   const { best, submit } = useBestScore("trivia");
+  const run = useRun("trivia");
 
   const total = Math.min(ROUND, bank.length);
   const done = round !== null && index >= round.length;
@@ -44,6 +46,7 @@ export function TriviaGame({ bank }: { bank: TriviaItem[] }) {
     setPicked(null);
     setScore(0);
     setRecord(false);
+    run.begin();
   };
 
   const choose = (i: number) => {
@@ -57,7 +60,10 @@ export function TriviaGame({ bank }: { bank: TriviaItem[] }) {
     const finalScore = score;
     setPicked(null);
     setIndex((n) => n + 1);
-    if (index + 1 >= round.length) setRecord(submit(finalScore));
+    if (index + 1 >= round.length) {
+      run.end();
+      setRecord(submit(finalScore));
+    }
   };
 
   const card = "w-full max-w-2xl rounded-xl border border-line bg-surface p-6 sm:p-8";
@@ -101,6 +107,10 @@ export function TriviaGame({ bank }: { bank: TriviaItem[] }) {
               <ShareScore text={`Am răspuns corect la ${score} din ${round.length} întrebări de gaming pe RespawnCentral. Tu câte știi?`} />
             )}
           </div>
+          {/* Only full 10-question rounds go on the leaderboard, so scores are comparable. */}
+          {done && score > 0 && round.length === ROUND && (
+            <SaveScore game="trivia" score={score} durationMs={run.duration} token={run.token} />
+          )}
         </div>
       </div>
     );

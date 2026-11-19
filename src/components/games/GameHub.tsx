@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AimTrainer } from "./AimTrainer";
 import { GAMES, type GameKey } from "./games";
+import { Leaderboard } from "./Leaderboard";
 import { SnakeGame } from "./SnakeGame";
 import { TriviaGame, type TriviaItem } from "./TriviaGame";
 
@@ -49,10 +50,13 @@ export function GameHub({ initial, trivia }: { initial: GameKey; trivia: TriviaI
         </button>
       </div>
 
-      <div role="tabpanel">
-        {game === "snake" && <SnakeGame />}
-        {game === "aim" && <AimTrainer />}
-        {game === "trivia" && <TriviaGame bank={trivia} />}
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div role="tabpanel" className="min-w-0">
+          {game === "snake" && <SnakeGame />}
+          {game === "aim" && <AimTrainer />}
+          {game === "trivia" && <TriviaGame bank={trivia} />}
+        </div>
+        <Leaderboard game={game} title={GAMES.find((g) => g.key === game)!.label} />
       </div>
     </div>
   );
