@@ -5,6 +5,10 @@ export const SITE = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
 };
 
+// Google Tag Manager container ID. Public (it ends up in every page's HTML), so it lives here;
+// override with NEXT_PUBLIC_GTM_ID, or set it to "" to turn tracking off.
+export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID ?? "GTM-MLNMJV5K";
+
 export const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/news", label: "News" },

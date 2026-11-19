@@ -36,6 +36,8 @@ live in `src/lib/site.ts`.
 
 ## Stats
 
+- **Google Analytics**: loaded through Google Tag Manager (container ID in `src/lib/site.ts`), on the public site only (not `/editor`) and only in production builds. GA4 itself is configured in the GTM container.
+
 - **Views**: counted once per anonymous visitor per day (hash of IP + browser + date, raw IP never stored).
 - **Homepage CTR**: clicks on a homepage card ÷ times that card was ≥50% visible on the homepage.
 
