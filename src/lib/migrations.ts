@@ -67,11 +67,29 @@ const MIGRATIONS = `
     end if;
   end $$;
 
+  -- 2026-11: mini-game leaderboards.
+  do $$ begin
+    if to_regclass('public.game_scores') is null then
+      create table game_scores (
+        id           uuid primary key default gen_random_uuid(),
+        game         text not null check (game in ('snake', 'aim', 'trivia')),
+        name         text not null,
+        score        integer not null check (score >= 0),
+        duration_ms  integer not null default 0,
+        run_id       text not null unique,
+        visitor_hash text not null default '',
+        hidden       boolean not null default false,
+        created_at   timestamptz not null default now()
+      );
+      create index game_scores_board_idx on game_scores (game, hidden, created_at desc);
+    end if;
+  end $$;
+
   -- RLS with no policies keeps Supabase's public REST API out (only where it isn't on yet).
   do $$
   declare t text;
   begin
-    foreach t in array array['site_settings', 'recommendations', 'recommendation_votes', 'trivia_questions'] loop
+    foreach t in array array['site_settings', 'recommendations', 'recommendation_votes', 'trivia_questions', 'game_scores'] loop
       if not (select relrowsecurity from pg_class where oid = ('public.' || t)::regclass) then
         execute format('alter table %I enable row level security', t);
       end if;

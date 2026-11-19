@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { SaveScore, useRun } from "./Leaderboard";
 import { primaryButton, ShareScore, Stat, useBestScore } from "./shared";
 
 const DURATION = 30; // seconds
@@ -32,6 +33,8 @@ export function AimTrainer() {
   const [avgReaction, setAvgReaction] = useState(0);
   const startedAt = useRef(0);
   const { best, submit } = useBestScore("aim");
+  const run = useRun("aim");
+  const { begin: beginRun, end: endRun } = run;
 
   const start = () => {
     reactionTimes.current = [];
@@ -42,6 +45,7 @@ export function AimTrainer() {
     setRecord(false);
     setTimeLeft(DURATION);
     setTargets(Array.from({ length: TARGETS_ON_SCREEN }, () => newTarget(0)));
+    beginRun();
     setPhase("playing");
   };
 
@@ -49,11 +53,12 @@ export function AimTrainer() {
     (finalHits: number) => {
       const times = reactionTimes.current;
       setAvgReaction(times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0);
+      endRun();
       setRecord(submit(finalHits));
       setTargets([]);
       setPhase("over");
     },
-    [submit],
+    [submit, endRun],
   );
 
   useEffect(() => {
@@ -146,6 +151,9 @@ export function AimTrainer() {
                   <ShareScore text={`Am lovit ${hits} ținte în 30 de secunde (${accuracy}% precizie) pe RespawnCentral. Mă bați?`} />
                 )}
               </div>
+              {phase === "over" && hits > 0 && (
+                <SaveScore game="aim" score={hits} durationMs={run.duration} token={run.token} />
+              )}
             </div>
           </div>
         )}

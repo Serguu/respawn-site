@@ -57,7 +57,7 @@ create table if not exists team_members (
   created_at timestamptz not null default now()
 );
 
--- Newer tables (site_settings, recommendations, recommendation_votes, trivia_questions) and the
+-- Newer tables (site_settings, recommendations, recommendation_votes, trivia_questions, game_scores) and the
 -- third article category are created by src/lib/migrations.ts, which db:setup also runs and the
 -- app runs by itself on first use, so an existing database upgrades without manual steps.
 
