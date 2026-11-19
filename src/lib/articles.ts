@@ -16,7 +16,7 @@ const summaryColumns = () => sql`
   a.id, a.slug, a.title, a.excerpt, a.cover_image, a.category, a.published_at,
   a.view_count, a.review_score, e.display_name as author_name,
   greatest(1, round(coalesce(array_length(regexp_split_to_array(
-    trim(regexp_replace(a.content_html, '<[^>]+>', ' ', 'g')), '\s+'), 1), 0) / 220.0))::int as reading_minutes
+    trim(regexp_replace(a.content_html, '<[^>]+>', ' ', 'g')), '[[:space:]]+'), 1), 0) / 220.0))::int as reading_minutes
 `;
 
 export async function getPublishedArticles(opts: {

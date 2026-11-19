@@ -14,8 +14,17 @@ function getClient(): Sql {
   const cached = globalThis.__sqlPool;
   if (cached?.url === url) return cached.client;
   cached?.client.end({ timeout: 5 }).catch(() => {});
-  // prepare:false is required by Supabase's transaction pooler.
-  const client = postgres(url, { prepare: false, ssl: "require", max: 5 });
+  // prepare:false is required by Supabase's transaction pooler. On serverless, idle connections are
+  // closed after 20 s and every connection is replaced after 5 min, so a connection the pooler left
+  // in a bad state doesn't linger; connect_timeout stops a request waiting forever for a socket.
+  const client = postgres(url, {
+    prepare: false,
+    ssl: "require",
+    max: 5,
+    idle_timeout: 20,
+    max_lifetime: 60 * 5,
+    connect_timeout: 10,
+  });
   globalThis.__sqlPool = { url, client };
   return client;
 }
