@@ -10,12 +10,12 @@ export function ReviewSummary({ article }: { article: Article }) {
       <div className="flex flex-col items-center gap-6 border-b border-line p-6 sm:flex-row sm:items-center sm:p-8">
         <ScoreRing score={article.review_score} size="xl" />
         <div className="text-center sm:text-left">
-          <p className="font-display text-xs font-extrabold uppercase tracking-[0.18em] text-accent">The Verdict</p>
+          <p className="font-display text-xs font-extrabold uppercase tracking-[0.18em] text-accent">Verdictul</p>
           <h2 id="verdict-heading" className="mt-1 font-display text-2xl font-black text-ink">
             {article.title}
           </h2>
           {article.review_platform && (
-            <p className="mt-1 text-sm text-muted">Reviewed on {article.review_platform}</p>
+            <p className="mt-1 text-sm text-muted">Testat pe {article.review_platform}</p>
           )}
           {article.review_verdict && (
             <p className="mt-3 text-[1.05rem] leading-relaxed text-ink-soft">{article.review_verdict}</p>
@@ -25,8 +25,8 @@ export function ReviewSummary({ article }: { article: Article }) {
 
       {(pros.length > 0 || cons.length > 0) && (
         <div className="grid sm:grid-cols-2">
-          <ProsCons title="Pros" items={pros} tone="pro" />
-          <ProsCons title="Cons" items={cons} tone="con" />
+          <ProsCons title="Plusuri" items={pros} tone="pro" />
+          <ProsCons title="Minusuri" items={cons} tone="con" />
         </div>
       )}
     </section>
@@ -50,7 +50,7 @@ function ProsCons({ title, items, tone }: { title: string; items: string[]; tone
           ))}
         </ul>
       ) : (
-        <p className="mt-4 text-sm text-muted">None listed.</p>
+        <p className="mt-4 text-sm text-muted">Nimic de menționat.</p>
       )}
     </div>
   );

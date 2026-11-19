@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The public pages moved to Romanian URLs; permanent redirects keep old links and search results working.
+  async redirects() {
+    return [
+      { source: "/news", destination: "/stiri", permanent: true },
+      { source: "/reviews", destination: "/recenzii", permanent: true },
+      { source: "/article/:slug", destination: "/articol/:slug", permanent: true },
+    ];
+  },
   images: {
     remotePatterns: [
       {

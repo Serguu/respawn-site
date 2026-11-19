@@ -146,7 +146,7 @@ export function ArticleForm({ article, justCreated = false }: { article: Article
                 Preview ↗
               </Link>
               {status === "published" && liveSlug && (
-                <Link href={`/article/${liveSlug}`} target="_blank" className="text-accent hover:underline">
+                <Link href={`/articol/${liveSlug}`} target="_blank" className="text-accent hover:underline">
                   View live ↗
                 </Link>
               )}
@@ -244,7 +244,7 @@ export function ArticleForm({ article, justCreated = false }: { article: Article
         </Panel>
 
         <Panel title="URL">
-          <Field label="Slug" htmlFor="slug" hint={`/article/${slug || "…"}`}>
+          <Field label="Slug" htmlFor="slug" hint={`/articol/${slug || "…"}`}>
             <input
               id="slug"
               name="slug"

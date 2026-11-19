@@ -21,7 +21,7 @@ export function SectionHeading({
           href={href}
           className="font-display text-xs font-extrabold uppercase tracking-wider text-muted transition-colors hover:text-accent"
         >
-          View all →
+          Vezi toate →
         </Link>
       )}
     </div>

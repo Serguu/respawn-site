@@ -14,9 +14,9 @@ export function ArticleView({ article }: { article: Article }) {
     <>
       <header className="mx-auto max-w-3xl px-4 pt-10 sm:px-6 sm:pt-14">
         <Link
-          href={isReview ? "/reviews" : "/news"}
+          href={isReview ? "/recenzii" : "/stiri"}
           className="inline-block font-display text-base hover:opacity-80"
-          aria-label={`Back to ${isReview ? "Reviews" : "News"}`}
+          aria-label={`Înapoi la ${isReview ? "Recenzii" : "Știri"}`}
         >
           <CategoryBadge category={article.category} />
         </Link>
@@ -37,23 +37,23 @@ export function ArticleView({ article }: { article: Article }) {
         <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-y border-line py-4 text-sm text-muted">
           {article.author_name && (
             <span>
-              By <span className="font-semibold text-ink">{article.author_name}</span>
+              De <span className="font-semibold text-ink">{article.author_name}</span>
             </span>
           )}
           {article.published_at && (
             <time dateTime={new Date(article.published_at).toISOString()}>{formatDate(article.published_at)}</time>
           )}
-          <span>{readingTime(article.content_html)} min read</span>
-          <span className="inline-flex items-center gap-1.5" title="Total views">
+          <span>{readingTime(article.content_html)} min de citit</span>
+          <span className="inline-flex items-center gap-1.5" title="Total vizualizări">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
               <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
               <circle cx="12" cy="12" r="3" />
             </svg>
-            {formatNumber(article.view_count)} {article.view_count === 1 ? "view" : "views"}
+            {formatNumber(article.view_count)} {viewsLabel(article.view_count)}
           </span>
           {hasScore && (
             <span className="font-display font-black text-accent sm:hidden">
-              Score {article.review_score!.toFixed(1)}/10
+              Nota {article.review_score!.toFixed(1)}/10
             </span>
           )}
         </div>
@@ -62,7 +62,7 @@ export function ArticleView({ article }: { article: Article }) {
       {article.cover_image && (
         <div className="mx-auto mt-8 max-w-5xl px-4 sm:px-6">
           <div className="relative aspect-[16/9] overflow-hidden rounded-lg bg-surface">
-            <Image src={article.cover_image} alt="" fill priority sizes="(min-width: 1024px) 1000px, 100vw" className="object-cover" />
+            <Image src={article.cover_image} alt={article.title} fill priority sizes="(min-width: 1024px) 1000px, 100vw" className="object-cover" />
           </div>
         </div>
       )}
@@ -73,4 +73,11 @@ export function ArticleView({ article }: { article: Article }) {
       </div>
     </>
   );
+}
+
+/** "1 vizualizare", "3 vizualizări", "25 de vizualizări" (Romanian uses "de" from 20 up). */
+function viewsLabel(n: number) {
+  if (n === 1) return "vizualizare";
+  const lastTwo = n % 100;
+  return n >= 20 && (lastTwo === 0 || lastTwo >= 20) ? "de vizualizări" : "vizualizări";
 }

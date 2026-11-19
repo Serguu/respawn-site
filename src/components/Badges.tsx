@@ -9,7 +9,7 @@ export function CategoryBadge({ category, className = "" }: { category: Category
         isReview ? "bg-review text-accent-ink" : "bg-news text-accent-ink"
       } ${className}`}
     >
-      {isReview ? "Review" : "News"}
+      {isReview ? "Recenzie" : "Știre"}
     </span>
   );
 }
@@ -17,7 +17,7 @@ export function CategoryBadge({ category, className = "" }: { category: Category
 export function CategoryLabel({ category }: { category: Category }) {
   return (
     <span className={`font-semibold ${category === "review" ? "text-review" : "text-news"}`}>
-      {category === "review" ? "Reviews" : "News"}
+      {category === "review" ? "Recenzii" : "Știri"}
     </span>
   );
 }
@@ -39,7 +39,7 @@ export function ScoreChip({ score, className = "" }: { score: number; className?
   return (
     <span
       className={`grid size-11 place-items-center rounded-md font-display text-lg font-black shadow-lg ${toneClasses[scoreTone(score)]} ${className}`}
-      aria-label={`Score ${score.toFixed(1)} out of 10`}
+      aria-label={`Nota ${score.toFixed(1)} din 10`}
     >
       {score.toFixed(1)}
     </span>
@@ -51,7 +51,7 @@ export function ScoreRing({ score, size = "lg" }: { score: number; size?: "lg" |
   const tone = scoreTone(score);
   const dims = size === "xl" ? "size-32 border-[6px] text-5xl" : "size-24 border-[5px] text-4xl";
   return (
-    <div className="flex flex-col items-center gap-2" aria-label={`Score ${score.toFixed(1)} out of 10`}>
+    <div className="flex flex-col items-center gap-2" aria-label={`Nota ${score.toFixed(1)} din 10`}>
       <div className={`grid place-items-center rounded-full bg-bg-deep font-display font-black ${dims} ${ringClasses[tone]}`}>
         {score.toFixed(1)}
       </div>
